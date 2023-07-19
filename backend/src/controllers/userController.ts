@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import User from "../models/userModel";
 
-const registerPost = asyncHandler(async (req: Request, res: Response) => {
+const registerUserPost = asyncHandler(async (req: Request, res: Response) => {
   // first check if the username is already taken
   const user = await User.findOne({ username: req.body.username });
   if (user) {
@@ -19,4 +19,4 @@ const registerPost = asyncHandler(async (req: Request, res: Response) => {
   });
 });
 
-export { registerPost };
+export { registerUserPost };
