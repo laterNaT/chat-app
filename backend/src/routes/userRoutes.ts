@@ -4,4 +4,4 @@ const router = express.Router();
 
 router.post("/register", registerPost);
 
-module.exports = router;
+export default router;

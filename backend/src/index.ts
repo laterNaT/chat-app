@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import express, { Request, Response } from "express";
 import mongoose from "mongoose";
 import errorMiddleware from "./middleware/errorMiddleware";
+import userRoutes from "./routes/userRoutes";
 
 dotenv.config();
 
@@ -11,7 +12,7 @@ mongoose.connect(process.env.MONGODB_URI!);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use("/api/users", require("./routes/userRoutes"));
+app.use("/api/users", userRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello World!");
