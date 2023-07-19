@@ -10,7 +10,6 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 mongoose.connect(process.env.MONGODB_URI!);
-app.use(errorMiddleware);
 app.use(
   session({
     secret: "secret",
@@ -30,3 +29,5 @@ app.get("/", (req: Request, res: Response) => {
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
+
+app.use(errorMiddleware);
