@@ -10,6 +10,11 @@ type AuthenticationContextProviderProps = {
   children: React.ReactNode;
 };
 
+type LoginResponse = {
+  session?: string;
+  message?: string;
+};
+
 const AuthenticationContext = createContext<AuthenticationContextType>(
   {} as AuthenticationContextType
 );
@@ -24,23 +29,24 @@ export function AuthenticationContextProvider({
   const [session, setSession] = useLocalStorage<string | null>("session");
 
   const handleLogin = async (username: string, password: string) => {
-    const res = await fetch("http://localhost:5000/api/users/login", {
-      method: "POST",
-      body: JSON.stringify({ username, password }),
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (!res.ok) {
-      console.log("error in handleLogin");
-      throw new Error("Login failed");
+    try {
+      const res = await fetch("http://localhost:5000/api/users/login", {
+        method: "POST",
+        body: JSON.stringify({ username, password }),
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!res.ok) {
+        throw new Error("Login failed");
+      }
+      const resMsg = (await res.json()) as LoginResponse;
+      setSession(resMsg.session!);
+    } catch (err) {
+      console.log("Error occured in login");
+      throw err;
     }
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const resMsg = await res.json();
-    console.log("resMsg", resMsg);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
-    setSession(resMsg.session);
   };
 
   const value = {
