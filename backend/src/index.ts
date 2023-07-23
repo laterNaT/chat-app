@@ -5,11 +5,13 @@ import express, { Request, Response } from "express";
 import session from "express-session";
 import mongoose from "mongoose";
 import errorMiddleware from "./middleware/errorMiddleware";
+import logRequest from "./middleware/logRequest";
 import validateUser from "./middleware/validateUser";
 import userRoutes from "./routes/userRoutes";
 dotenv.config();
 
 const app = express();
+app.use("/", logRequest);
 
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 
