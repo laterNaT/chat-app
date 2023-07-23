@@ -9,7 +9,6 @@ import {
 } from "./context/AuthenticationContext";
 import Login from "./pages/Login";
 import ProtectedPage from "./pages/ProtectedPage";
-import PublicPage from "./pages/PublicPage";
 import Root from "./pages/Root";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -22,19 +21,20 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 const router = createBrowserRouter([
   {
+    path: "/",
     element: <Root />,
-    children: [
-      { path: "/", element: <PublicPage /> },
-      { path: "/login", element: <Login /> },
-      {
-        path: "/home",
-        element: (
-          <ProtectedRoute>
-            <ProtectedPage />
-          </ProtectedRoute>
-        ),
-      },
-    ],
+  },
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/home",
+    element: (
+      <ProtectedRoute>
+        <ProtectedPage />
+      </ProtectedRoute>
+    ),
   },
 ]);
 

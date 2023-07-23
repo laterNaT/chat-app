@@ -1,17 +1,16 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function Root() {
   return (
     <div>
-      <ul>
-        <li>
-          <Link to="/login">Login</Link>
-        </li>
-        <li>
-          <Link to="/home">Home</Link>
-        </li>
-      </ul>
-      <Outlet />
+      <h1>Welcome to chat-app</h1>
+      <p>
+        In this app you chat chat privatly with your friends or speak with
+        strangers in global chat rooms.
+      </p>
+      <Link to="/login" style={{ textDecoration: "none" }}>
+        Continue
+      </Link>
     </div>
   );
 }
