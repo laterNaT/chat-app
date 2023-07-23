@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import User from "../models/userModel";
 
+//todo: create unified response type
+
 const registerUserPost = asyncHandler(async (req: Request, res: Response) => {
   // check if the username is already taken
   const user = await User.findOne({ username: req.body.username });
@@ -46,4 +48,22 @@ const loginUserPost = asyncHandler(async (req: Request, res: Response) => {
   });
 });
 
-export { loginUserPost, registerUserPost };
+const logoutUserDelete = asyncHandler(async (req: Request, res: Response) => {
+  if (req.session) {
+    req.session.destroy((err) => {
+      if (err) {
+        throw new Error("Error destroying session");
+      } else {
+        res.clearCookie("session");
+        res.status(200).json({
+          message: "User logged out successfully",
+        });
+      }
+    });
+  } else {
+    res.status(400);
+    throw new Error("Session does not exist");
+  }
+});
+
+export { loginUserPost, logoutUserDelete, registerUserPost };

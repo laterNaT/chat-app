@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start:dev": "npx nodemon"
+    "start:dev": "export NODE_ENV=development && npx nodemon"
   },
   "keywords": [],
   "author": "",
