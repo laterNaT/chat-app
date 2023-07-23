@@ -1,6 +1,17 @@
 import { Link } from "react-router-dom";
+import { useAuthentication } from "../context/AuthenticationContext";
 
 export default function TopNavBar() {
+  const { handleLogout } = useAuthentication();
+
+  const logout = async () => {
+    try {
+      await handleLogout();
+    } catch (err) {
+      console.error("error: ", err);
+    }
+  };
+
   return (
     <ul
       style={{
@@ -24,7 +35,7 @@ export default function TopNavBar() {
         </li>
       </div>
       <li>
-        <button>Logout</button>
+        <button onClick={() => void logout()}>Logout</button>
       </li>
     </ul>
   );

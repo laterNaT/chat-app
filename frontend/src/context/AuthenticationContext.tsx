@@ -4,6 +4,7 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 type AuthenticationContextType = {
   session: string | null;
   handleLogin: (username: string, password: string) => Promise<void>;
+  handleLogout: () => Promise<void>;
 };
 
 type AuthenticationContextProviderProps = {
@@ -13,6 +14,10 @@ type AuthenticationContextProviderProps = {
 type LoginResponse = {
   session?: string;
   message?: string;
+};
+
+type LogoutResponse = {
+  message: string;
 };
 
 const AuthenticationContext = createContext<AuthenticationContextType>(
@@ -52,10 +57,32 @@ export function AuthenticationContextProvider({
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/users/logout", {
+        method: "delete",
+        credentials: "include",
+      });
+      if (!res.ok) {
+        throw new Error("Logout failed");
+      }
+      const msg = (await res.json()) as LogoutResponse;
+      if (!res.ok) {
+        throw new Error(msg.message);
+      }
+      setSession(null);
+    } catch (err) {
+      console.log("Error occured in logout");
+      throw err;
+    }
+  };
+
   const value = {
     session,
     handleLogin,
+    handleLogout,
   };
+
   return (
     <AuthenticationContext.Provider value={value}>
       {children}
