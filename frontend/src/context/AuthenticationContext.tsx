@@ -3,7 +3,7 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 
 type AuthenticationContextType = {
   session: string | null;
-  handleLogin: (username: string, password: string) => void;
+  handleLogin: (username: string, password: string) => Promise<void>;
 };
 
 type AuthenticationContextProviderProps = {
@@ -28,7 +28,10 @@ export function AuthenticationContextProvider({
 }: AuthenticationContextProviderProps) {
   const [session, setSession] = useLocalStorage<string | null>("session");
 
-  const handleLogin = async (username: string, password: string) => {
+  const handleLogin = async (
+    username: string,
+    password: string
+  ): Promise<void> => {
     try {
       const res = await fetch("http://localhost:5000/api/users/login", {
         method: "POST",
@@ -38,10 +41,10 @@ export function AuthenticationContextProvider({
           "Content-Type": "application/json",
         },
       });
-      if (!res.ok) {
-        throw new Error("Login failed");
-      }
       const resMsg = (await res.json()) as LoginResponse;
+      if (!res.ok) {
+        throw new Error(resMsg.message);
+      }
       setSession(resMsg.session!);
     } catch (err) {
       console.log("Error occured in login");
