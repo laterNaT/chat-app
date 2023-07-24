@@ -1,3 +1,4 @@
+import bcrypt from "bcrypt";
 import { Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import User from "../models/userModel";
@@ -12,10 +13,13 @@ const registerUserPost = asyncHandler(async (req: Request, res: Response) => {
     throw new Error("Username is already taken");
   }
 
+  // hash the password
+  const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
   // create the user
   const newUser = await User.create({
     username: req.body.username,
-    password: req.body.password,
+    password: hashedPassword,
   });
 
   // send the response
@@ -33,7 +37,8 @@ const loginUserPost = asyncHandler(async (req: Request, res: Response) => {
   }
 
   // check if the password is correct
-  if (user.password !== req.body.password) {
+  const match = await bcrypt.compare(req.body.password, user.password);
+  if (!match) {
     res.status(400);
     throw new Error("Password is incorrect");
   }
