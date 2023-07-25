@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/Sidebar.scss";
 import { TGetFriendsGetResponse } from "../types/friendController";
 import FriendsSidebar from "./FriendsSidebar";
@@ -7,6 +8,7 @@ import RoomsSidebar from "./RoomsSidebar";
 export default function Sidebar() {
   const [showFriends, setShowFriends] = useState(true);
   const [friends, setFriends] = useState<string[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getFriends = async () => {
@@ -30,12 +32,19 @@ export default function Sidebar() {
     getFriends().catch((err) => console.log(err));
   }, []);
 
+  const handleClick = () => {
+    navigate("/home/manage-friends");
+  };
+
   return (
     <div className="sidebar">
       <button className="button" onClick={() => setShowFriends(!showFriends)}>
         Show {showFriends ? "Rooms" : "Friends"}
       </button>
       {showFriends ? <FriendsSidebar friends={friends} /> : <RoomsSidebar />}
+      <button className="button" onClick={handleClick}>
+        Manage Friends
+      </button>
     </div>
   );
 }

@@ -9,6 +9,7 @@ import {
 } from "./context/AuthenticationContext";
 import HomePage from "./pages/HomePage";
 import Login from "./pages/Login";
+import ManageFriends from "./pages/ManageFriends";
 import Root from "./pages/Root";
 import "./styles/Global.scss";
 
@@ -36,6 +37,16 @@ const router = createBrowserRouter([
         <HomePage />
       </ProtectedRoute>
     ),
+    children: [
+      {
+        path: "/home/manage-friends",
+        element: (
+          <ProtectedRoute>
+            <ManageFriends />
+          </ProtectedRoute>
+        ),
+      },
+    ],
   },
 ]);
 
