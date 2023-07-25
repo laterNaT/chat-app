@@ -2,8 +2,13 @@ import bcrypt from "bcrypt";
 import { Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import User from "../models/userModel";
-
-//todo: create unified response type
+import {
+  TFindUsersGetResponse,
+  TGetFriendsGetResponse,
+  TLoginUserPostResponse,
+  TLogoutUserDeleteResponse,
+  TRegisterUserPostResponse,
+} from "../types/my_types/friendController";
 
 const registerUserPost = asyncHandler(async (req: Request, res: Response) => {
   // check if the username is already taken
@@ -25,7 +30,7 @@ const registerUserPost = asyncHandler(async (req: Request, res: Response) => {
   // send the response
   res.status(201).json({
     message: "User created successfully",
-  });
+  } as TRegisterUserPostResponse);
 });
 
 const loginUserPost = asyncHandler(async (req: Request, res: Response) => {
@@ -52,7 +57,7 @@ const loginUserPost = asyncHandler(async (req: Request, res: Response) => {
   res.status(200).json({
     message: "User logged in successfully",
     session: req.sessionID,
-  });
+  } as TLoginUserPostResponse);
 });
 
 const logoutUserDelete = asyncHandler(async (req: Request, res: Response) => {
@@ -64,7 +69,7 @@ const logoutUserDelete = asyncHandler(async (req: Request, res: Response) => {
         res.clearCookie("session");
         res.status(200).json({
           message: "User logged out successfully",
-        });
+        } as TLogoutUserDeleteResponse);
       }
     });
   } else {
@@ -86,14 +91,34 @@ const findUsersGet = asyncHandler(async (req: Request, res: Response) => {
   const match = users.map((user) => {
     return {
       username: user.username,
-      id: user._id,
+      id: user._id as unknown as string,
     };
   });
 
   res.status(200).json({
     message: "Users found successfully",
     users: match,
-  });
+  } as TFindUsersGetResponse);
 });
 
-export { findUsersGet, loginUserPost, logoutUserDelete, registerUserPost };
+const getFriendsGet = asyncHandler(async (req: Request, res: Response) => {
+  const user = await User.findById(req.session.userId);
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User does not exist");
+  }
+
+  res.status(200).json({
+    message: "Friends found successfully",
+    friends: user.friends as unknown as string[],
+  } as TGetFriendsGetResponse);
+});
+
+export {
+  findUsersGet,
+  getFriendsGet,
+  loginUserPost,
+  logoutUserDelete,
+  registerUserPost,
+};

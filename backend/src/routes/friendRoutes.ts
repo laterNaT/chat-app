@@ -1,7 +1,11 @@
 import express from "express";
-import { friendRequestPost } from "../controllers/friendController";
+import {
+  friendRequestAcceptPost,
+  friendRequestPost,
+} from "../controllers/friendController";
 const router = express.Router();
 
 router.post("/create", friendRequestPost);
+router.post("/accept", friendRequestAcceptPost);
 
 export default router;

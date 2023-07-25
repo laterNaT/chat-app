@@ -1,6 +1,7 @@
 import express from "express";
 import {
   findUsersGet,
+  getFriendsGet,
   loginUserPost,
   logoutUserDelete,
   registerUserPost,
@@ -13,5 +14,6 @@ router.post("/register", registerUserPost);
 router.post("/login", loginUserPost);
 router.delete("/logout", logoutUserDelete);
 router.get("/find/:username", findUsersGet);
+router.get("/friends", getFriendsGet);
 
 export default router;

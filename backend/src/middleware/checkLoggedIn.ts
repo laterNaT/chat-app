@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
 const checkLoggedIn = (req: Request, res: Response, next: NextFunction) => {
-  if (req.session.isAuthorized && req.method !== "DELETE") {
+  if (req.session.isAuthorized && req.method === "POST") {
     res.status(400);
     throw new Error("Already logged in");
   }

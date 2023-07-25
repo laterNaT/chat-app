@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 type IUser = {
   username: string;
   password: string;
+  friends: mongoose.Schema.Types.ObjectId[];
 };
 
 const userSchema = new mongoose.Schema<IUser>({
@@ -18,6 +19,13 @@ const userSchema = new mongoose.Schema<IUser>({
     required: [true, "Please enter a password"],
     minlength: [6, "Password must be at least 6 characters long"],
   },
+  friends: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: [],
+    },
+  ],
 });
 
 export default mongoose.model<IUser>("User", userSchema);
