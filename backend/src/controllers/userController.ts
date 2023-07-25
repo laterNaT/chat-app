@@ -45,6 +45,8 @@ const loginUserPost = asyncHandler(async (req: Request, res: Response) => {
 
   // set the user as authorized
   req.session.isAuthorized = true;
+  // save the user id
+  req.session.userId = user._id;
 
   // send the response
   res.status(200).json({
