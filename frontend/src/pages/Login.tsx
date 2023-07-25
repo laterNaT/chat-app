@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthentication } from "../context/AuthenticationContext";
+import "../styles/Login.scss";
 
 export default function Login() {
   const { session } = useAuthentication();
@@ -26,34 +27,32 @@ export default function Login() {
   }, [session, navigate]);
 
   return (
-    <div>
-      <h1>You are currently not signed in, please sign in below.</h1>
-      <form
-        method="POST"
-        style={{ display: "flex", flexDirection: "column" }}
-        onSubmit={handleSubmit}
-      >
-        <label>
-          Username:
-          <input
-            type="text"
-            name="username"
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </label>
-        <label>
-          Password:
-          <input
-            type="password"
-            name="password"
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </label>
-        <button type="submit" style={{ width: "100px" }}>
-          Login
-        </button>
-        {error && <p style={{ color: "red" }}>{error}</p>}
-      </form>
+    <div className="container">
+      <div className="login-form">
+        <h1>Welcome back! Please sign in to continue.</h1>
+        <form method="POST" onSubmit={handleSubmit}>
+          <label>
+            Username:
+            <input
+              type="text"
+              name="username"
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </label>
+          <label>
+            Password:
+            <input
+              type="password"
+              name="password"
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </label>
+          <button type="submit" className="button">
+            Login
+          </button>
+          {error && <p className="error-message">{error} 🚨️</p>}
+        </form>
+      </div>
     </div>
   );
 }

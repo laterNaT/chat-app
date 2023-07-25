@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useAuthentication } from "../context/AuthenticationContext";
+import "../styles/TopNavBar.scss";
 
 export default function TopNavBar() {
   const { handleLogout } = useAuthentication();
@@ -13,30 +14,27 @@ export default function TopNavBar() {
   };
 
   return (
-    <ul
-      style={{
-        display: "flex",
-        listStyle: "none",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          flexGrow: 1,
-          justifyContent: "center",
-          gap: 20,
-        }}
-      >
-        <li>
-          <Link to="/home">Home</Link>
+    <nav className="navbar">
+      <ul className="navbar-nav">
+        <li className="nav-item">
+          <Link to="/home" className="nav-link">
+            Home
+          </Link>
         </li>
-        <li>
-          <Link to="/home/profile">Profile</Link>
+        <li className="nav-item">
+          <Link to="/home/profile" className="nav-link">
+            Profile
+          </Link>
         </li>
-      </div>
-      <li>
-        <button onClick={() => void logout()}>Logout</button>
-      </li>
-    </ul>
+        <li className="nav-item">
+          <button
+            className="nav-link logout-button"
+            onClick={() => void logout()}
+          >
+            Logout
+          </button>
+        </li>
+      </ul>
+    </nav>
   );
 }

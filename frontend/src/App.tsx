@@ -10,6 +10,7 @@ import {
 import Login from "./pages/Login";
 import ProtectedPage from "./pages/ProtectedPage";
 import Root from "./pages/Root";
+import "./styles/Global.scss";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { session } = useAuthentication();
