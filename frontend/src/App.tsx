@@ -7,8 +7,8 @@ import {
   AuthenticationContextProvider,
   useAuthentication,
 } from "./context/AuthenticationContext";
+import HomePage from "./pages/HomePage";
 import Login from "./pages/Login";
-import ProtectedPage from "./pages/ProtectedPage";
 import Root from "./pages/Root";
 import "./styles/Global.scss";
 
@@ -33,7 +33,7 @@ const router = createBrowserRouter([
     path: "/home",
     element: (
       <ProtectedRoute>
-        <ProtectedPage />
+        <HomePage />
       </ProtectedRoute>
     ),
   },
