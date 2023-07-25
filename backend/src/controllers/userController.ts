@@ -71,4 +71,27 @@ const logoutUserDelete = asyncHandler(async (req: Request, res: Response) => {
   }
 });
 
-export { loginUserPost, logoutUserDelete, registerUserPost };
+const findUsersGet = asyncHandler(async (req: Request, res: Response) => {
+  const users = await User.find({
+    username: { $regex: "^" + req.params.username, $options: "i" },
+  });
+
+  if (users.length === 0) {
+    res.status(400);
+    throw new Error("No users found");
+  }
+
+  const match = users.map((user) => {
+    return {
+      username: user.username,
+      id: user._id,
+    };
+  });
+
+  res.status(200).json({
+    message: "Users found successfully",
+    users: match,
+  });
+});
+
+export { findUsersGet, loginUserPost, logoutUserDelete, registerUserPost };
