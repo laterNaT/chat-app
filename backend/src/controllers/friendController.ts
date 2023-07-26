@@ -86,6 +86,27 @@ const friendRequestAcceptPost = asyncHandler(
   },
 );
 
+const friendRequestDeclinePost = asyncHandler(
+  async (req: Request, res: Response) => {
+    const from = req.body.id;
+    const to = req.session.userId;
+
+    const friendRequest = await friendModel.findOne({
+      sender: from,
+      receiver: to,
+      status: "pending",
+    });
+
+    if (!friendRequest) {
+      res.status(400);
+      throw new Error("Friend request not found");
+    }
+
+    friendRequest.status = "rejected";
+    await friendRequest.save();
+  },
+);
+
 const getFriendRequestsGet = asyncHandler(
   async (req: Request, res: Response) => {
     const friendRequests = await friendModel.find({
@@ -101,4 +122,9 @@ const getFriendRequestsGet = asyncHandler(
   },
 );
 
-export { friendRequestAcceptPost, friendRequestPost, getFriendRequestsGet };
+export {
+  friendRequestAcceptPost,
+  friendRequestDeclinePost,
+  friendRequestPost,
+  getFriendRequestsGet,
+};
