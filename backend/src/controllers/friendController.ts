@@ -44,20 +44,19 @@ const friendRequestAcceptPost = asyncHandler(
   async (req: Request, res: Response) => {
     const from = req.body.id;
     const to = req.session.userId;
-    const friendRequest = await friendModel.findOne({
-      sender: from,
-      receiver: to,
-      status: "pending",
-    });
-
-    if (!friendRequest) {
-      res.status(400);
-      throw new Error("Friend request does not exist");
-    }
 
     const session = await mongoose.startSession();
+    session.startTransaction();
 
     try {
+      const friendRequest = await friendModel.findOne({
+        sender: from,
+        receiver: to,
+        status: "pending",
+      });
+      if (!friendRequest) {
+        throw new Error("Friend request not found");
+      }
       friendRequest.status = "accepted";
       await friendRequest.save({ session });
       const update1 = await userModel.updateOne(
@@ -74,24 +73,12 @@ const friendRequestAcceptPost = asyncHandler(
         throw new Error("Failed to update friends");
       }
       await session.commitTransaction();
-      session.endSession();
     } catch (error) {
       await session.abortTransaction();
-      session.endSession();
       throw error;
+    } finally {
+      session.endSession();
     }
-
-    await userModel.updateOne(
-      { _id: from },
-      { $push: { friends: to } },
-      { new: true },
-    );
-
-    await userModel.updateOne(
-      { _id: to },
-      { $push: { friends: from } },
-      { new: true },
-    );
 
     res.status(200).json({
       message: "Friend request accepted successfully",
@@ -99,4 +86,19 @@ const friendRequestAcceptPost = asyncHandler(
   },
 );
 
-export { friendRequestAcceptPost, friendRequestPost };
+const getFriendRequestsGet = asyncHandler(
+  async (req: Request, res: Response) => {
+    const friendRequests = await friendModel.find({
+      receiver: req.session.userId,
+      status: "pending",
+    });
+
+    // todo: maybe not send everything
+
+    res.status(200).json({
+      friendRequests,
+    });
+  },
+);
+
+export { friendRequestAcceptPost, friendRequestPost, getFriendRequestsGet };
