@@ -30,7 +30,7 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/api/users", userRoutes);
-app.use("/api/friend-requests", friendRoutes);
+app.use("/api/friends", friendRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello World!");

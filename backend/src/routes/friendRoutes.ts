@@ -1,15 +1,20 @@
 import express from "express";
 import {
-  friendRequestAcceptPost,
-  friendRequestDeclinePost,
-  friendRequestPost,
-  getFriendRequestsGet,
+  acceptFriendRequest,
+  declineFriendRequest,
+  fetchPendingFriendRequests,
+  findUsersNotFriended,
+  getUserFriends,
+  sendFriendRequest,
 } from "../controllers/friendController";
 const router = express.Router();
 
-router.post("/create", friendRequestPost);
-router.post("/accept", friendRequestAcceptPost);
-router.post("/decline", friendRequestDeclinePost);
-router.get("/friends", getFriendRequestsGet);
+// todo: add auth middleware
+router.post("/requests/send", sendFriendRequest);
+router.post("/requests/accept", acceptFriendRequest);
+router.post("/requests/decline", declineFriendRequest);
+router.get("/requests/pending", fetchPendingFriendRequests);
+router.get("/not-friended/:username", findUsersNotFriended);
+router.get("/user", getUserFriends);
 
 export default router;

@@ -5,6 +5,7 @@ type AuthenticationContextType = {
   session: string | null;
   handleLogin: (username: string, password: string) => Promise<void>;
   handleLogout: () => Promise<void>;
+  handleRegister: (username: string, password: string) => Promise<void>;
 };
 
 type AuthenticationContextProviderProps = {
@@ -57,6 +58,30 @@ export function AuthenticationContextProvider({
     }
   };
 
+  const handleRegister = async (username: string, password: string) => {
+    try {
+      if (!username || !password) {
+        throw new Error("Username and password required");
+      }
+      const res = await fetch("http://localhost:5000/api/users/register", {
+        method: "POST",
+        body: JSON.stringify({ username, password }),
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const resMsg = (await res.json()) as { message: string };
+      if (!res.ok) {
+        throw new Error(resMsg.message);
+      }
+    } catch (err) {
+      console.log("Error occured in register");
+      console.log(err);
+      throw err;
+    }
+  };
+
   const handleLogout = async () => {
     try {
       const res = await fetch("http://localhost:5000/api/users/logout", {
@@ -81,6 +106,7 @@ export function AuthenticationContextProvider({
     session,
     handleLogin,
     handleLogout,
+    handleRegister,
   };
 
   return (

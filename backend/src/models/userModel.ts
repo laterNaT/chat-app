@@ -4,6 +4,7 @@ type IUser = {
   username: string;
   password: string;
   friends: mongoose.Schema.Types.ObjectId[];
+  conversations: mongoose.Schema.Types.ObjectId[];
 };
 
 const userSchema = new mongoose.Schema<IUser>({
@@ -23,6 +24,13 @@ const userSchema = new mongoose.Schema<IUser>({
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      default: [],
+    },
+  ],
+  conversations: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Conversation",
       default: [],
     },
   ],

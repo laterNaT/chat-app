@@ -7,9 +7,20 @@ import {
   AuthenticationContextProvider,
   useAuthentication,
 } from "./context/AuthenticationContext";
-import HomePage from "./pages/HomePage";
+import AddFriend, {
+  action as addFriendAction,
+  loader as addFriendLoader,
+} from "./pages/AddFriend";
+import FriendRequests, {
+  action as friendRequestsAction,
+  loader as friendRequestsLoader,
+} from "./pages/FriendRequests";
+import HomePage, { loader as homePageLoader } from "./pages/HomePage";
 import Login from "./pages/Login";
-import ManageFriends from "./pages/ManageFriends";
+import ManageFriends, {
+  loader as manageFriendsLoader,
+} from "./pages/ManageFriends";
+import Register from "./pages/Register";
 import Root from "./pages/Root";
 import "./styles/Global.scss";
 
@@ -31,7 +42,12 @@ const router = createBrowserRouter([
     element: <Login />,
   },
   {
+    path: "/register",
+    element: <Register />,
+  },
+  {
     path: "/home",
+    loader: homePageLoader,
     element: (
       <ProtectedRoute>
         <HomePage />
@@ -39,10 +55,31 @@ const router = createBrowserRouter([
     ),
     children: [
       {
-        path: "/home/manage-friends",
+        path: "manage-friends",
+        loader: manageFriendsLoader,
         element: (
           <ProtectedRoute>
             <ManageFriends />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "manage-friends/friend-requests",
+        loader: friendRequestsLoader,
+        action: friendRequestsAction,
+        element: (
+          <ProtectedRoute>
+            <FriendRequests />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "manage-friends/add",
+        loader: addFriendLoader,
+        action: addFriendAction,
+        element: (
+          <ProtectedRoute>
+            <AddFriend />
           </ProtectedRoute>
         ),
       },

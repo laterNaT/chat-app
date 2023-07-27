@@ -4,10 +4,10 @@ import mongoose from "mongoose";
 import friendModel from "../models/friendRequestModel";
 import userModel from "../models/userModel";
 
-const friendRequestPost = asyncHandler(async (req: Request, res: Response) => {
+const sendFriendRequest = asyncHandler(async (req: Request, res: Response) => {
   // check if req.body.id is a valid user so
   // we don't create a friend request for a non-existent user
-  const exists = await userModel.exists({ _id: req.body.id });
+  const exists = await userModel.exists({ username: req.body.username });
   if (!exists) {
     res.status(400);
     throw new Error(
@@ -15,11 +15,16 @@ const friendRequestPost = asyncHandler(async (req: Request, res: Response) => {
     );
   }
 
+  // take in username instead of id (since username is unique)
+  // eeehh maybe I should just have used id instead, oh well  ¯\_(ツ)_/¯
+  const sender = req.session.userId;
+  const receiver = exists._id;
+
   // check if already friends
   const alreadyFriends = await friendModel.findOne({
     $or: [
-      { sender: req.session.userId, receiver: req.body.id },
-      { sender: req.body.id, receiver: req.session.userId },
+      { sender, receiver },
+      { sender: receiver, receiver: sender },
     ],
   });
 
@@ -30,25 +35,30 @@ const friendRequestPost = asyncHandler(async (req: Request, res: Response) => {
 
   // create the friend request
   const result = await friendModel.create({
-    receiver: req.body.id,
-    sender: req.session.userId,
+    receiver,
+    sender,
   });
 
-  // send the response
   res.status(200).json({
     message: "Friend request sent successfully",
   });
 });
 
-const friendRequestAcceptPost = asyncHandler(
+const acceptFriendRequest = asyncHandler(
   async (req: Request, res: Response) => {
-    const from = req.body.id;
-    const to = req.session.userId;
+    const username = req.body.username;
 
     const session = await mongoose.startSession();
     session.startTransaction();
 
     try {
+      const sender = await userModel.findOne({ username });
+      if (!sender) {
+        res.status(400);
+        throw new Error("User does not exist");
+      }
+      const from = sender._id;
+      const to = req.session.userId;
       const friendRequest = await friendModel.findOne({
         sender: from,
         receiver: to,
@@ -86,7 +96,7 @@ const friendRequestAcceptPost = asyncHandler(
   },
 );
 
-const friendRequestDeclinePost = asyncHandler(
+const declineFriendRequest = asyncHandler(
   async (req: Request, res: Response) => {
     const from = req.body.id;
     const to = req.session.userId;
@@ -104,27 +114,118 @@ const friendRequestDeclinePost = asyncHandler(
 
     friendRequest.status = "rejected";
     await friendRequest.save();
+
+    res.status(200).json({
+      message: "Friend request declined successfully",
+    });
   },
 );
 
-const getFriendRequestsGet = asyncHandler(
+const fetchPendingFriendRequests = asyncHandler(
   async (req: Request, res: Response) => {
-    const friendRequests = await friendModel.find({
-      receiver: req.session.userId,
-      status: "pending",
+    const data = await friendModel
+      .find({
+        receiver: req.session.userId,
+        status: "pending",
+      })
+      .populate("sender", "username")
+      .populate("receiver", "username");
+
+    const friendRequests = data.map((friendRequest) => {
+      return {
+        id: friendRequest._id,
+        sender: friendRequest.sender,
+        receiver: friendRequest.receiver,
+        status: friendRequest.status,
+      };
     });
 
-    // todo: maybe not send everything
-
     res.status(200).json({
+      message: "Friend requests found successfully",
       friendRequests,
     });
   },
 );
 
+const findUsersNotFriended = asyncHandler(
+  async (req: Request, res: Response) => {
+    // returns a list of users matching username
+    // that are not friends with the current user (req.session.userId)
+    // and with status information
+
+    const myUser = await userModel.findById(req.session.userId);
+    if (!myUser) {
+      res.status(400);
+      throw new Error("User does not exist");
+    }
+
+    const myUsername = myUser.username;
+
+    // Find users who are not friends with the current user (req.session.userId)
+    // and match the given username
+    const users = await userModel.find({
+      $and: [
+        { friends: { $nin: [req.session.userId] } },
+        { username: { $regex: "^" + req.params.username, $options: "i" } },
+        { username: { $ne: myUsername } },
+      ],
+    });
+
+    const friendRequests = await friendModel.find({
+      sender: req.session.userId,
+    });
+
+    const match = users.map((user) => {
+      let status = "none";
+
+      // Check if there is a friend request from the current user to this user
+      const foundRequest = friendRequests.find(
+        (request) => request.receiver.toString() === user._id.toString(),
+      );
+
+      // Set the status if we have sent a friend request to this user
+      if (foundRequest) {
+        status = foundRequest.status;
+      }
+
+      // otherwise, set the status to none
+
+      return {
+        username: user.username,
+        id: user._id as unknown as string,
+        status,
+      };
+    });
+
+    res.status(200).json({
+      message: "Users found successfully",
+      users: match,
+    });
+  },
+);
+
+const getUserFriends = asyncHandler(async (req: Request, res: Response) => {
+  const user = await userModel.findById(req.session.userId).populate({
+    path: "friends",
+    select: "username",
+  });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User does not exist");
+  }
+
+  res.status(200).json({
+    message: "Friends found successfully",
+    friends: user.friends as unknown as string[],
+  });
+});
+
 export {
-  friendRequestAcceptPost,
-  friendRequestDeclinePost,
-  friendRequestPost,
-  getFriendRequestsGet,
+  acceptFriendRequest,
+  declineFriendRequest,
+  fetchPendingFriendRequests,
+  findUsersNotFriended,
+  getUserFriends,
+  sendFriendRequest,
 };
