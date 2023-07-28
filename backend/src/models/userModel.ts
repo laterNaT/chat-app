@@ -3,8 +3,8 @@ import mongoose from "mongoose";
 type IUser = {
   username: string;
   password: string;
-  friends: mongoose.Schema.Types.ObjectId[];
-  conversations: mongoose.Schema.Types.ObjectId[];
+  friends: mongoose.Types.ObjectId[];
+  conversations: mongoose.Types.ObjectId[];
 };
 
 const userSchema = new mongoose.Schema<IUser>({

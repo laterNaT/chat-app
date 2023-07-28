@@ -1,13 +1,13 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 type TConversation = {
   conversationName: string;
-  conversationStarter: typeof mongoose.Schema.Types.ObjectId;
-  participants: (typeof mongoose.Schema.Types.ObjectId)[];
+  conversationStarter: mongoose.Types.ObjectId;
+  participants: mongoose.Types.ObjectId[];
   messages: {
-    sender: typeof mongoose.Schema.Types.ObjectId;
+    sender: mongoose.Types.ObjectId;
     message: string;
-    createdAt: Date;
+    date: Date;
   }[];
 };
 
@@ -17,13 +17,13 @@ const conversationSchema = new mongoose.Schema<TConversation>({
     required: [true, "Please enter a conversation name"],
   },
   conversationStarter: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     required: [true, "Please enter who started the conversation"],
     ref: "User",
   },
   participants: [
     {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       required: [true, "Please enter a participant"],
       ref: "User",
     },
@@ -31,17 +31,17 @@ const conversationSchema = new mongoose.Schema<TConversation>({
   messages: [
     {
       sender: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         required: [true, "Please enter a sender"],
         ref: "User",
       },
       message: {
         type: String,
-        required: [true, "Please enter a message"],
+        date: Date,
       },
-      createdAt: {
+      date: {
         type: Date,
-        required: [true, "Please enter a created at"],
+        default: Date.now,
       },
     },
   ],

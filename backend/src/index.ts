@@ -7,6 +7,7 @@ import mongoose from "mongoose";
 import errorMiddleware from "./middleware/errorMiddleware";
 import logRequest from "./middleware/logRequest";
 import validateUser from "./middleware/validateUser";
+import conversationRoutes from "./routes/conversationRoutes";
 import friendRoutes from "./routes/friendRoutes";
 import userRoutes from "./routes/userRoutes";
 dotenv.config();
@@ -31,6 +32,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/api/users", userRoutes);
 app.use("/api/friends", friendRoutes);
+app.use("/api/conversation", conversationRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello World!");
