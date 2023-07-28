@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express, { Request, Response } from "express";
 import session from "express-session";
+import { createServer } from "http";
 import mongoose from "mongoose";
 import errorMiddleware from "./middleware/errorMiddleware";
 import logRequest from "./middleware/logRequest";
@@ -10,9 +11,11 @@ import validateUser from "./middleware/validateUser";
 import conversationRoutes from "./routes/conversationRoutes";
 import friendRoutes from "./routes/friendRoutes";
 import userRoutes from "./routes/userRoutes";
+
 dotenv.config();
 
 const app = express();
+const httpServer = createServer(app);
 app.use("/", logRequest);
 
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
@@ -42,7 +45,7 @@ app.get("/protected", validateUser, (req: Request, res: Response) => {
   res.send("Protected route");
 });
 
-app.listen(port, () => {
+httpServer.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
 
