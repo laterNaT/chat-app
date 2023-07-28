@@ -3,8 +3,6 @@
 This project is all about exploring and learning. I'm diving deep into the world of full stack development and brushing up my skills.
 The idea of real-time communication with websockets sounded interesting, so I thought, why not give it a shot?
 
-Remember, this is more of a learning project for me.
-
 🚧🚧🚧 Under construction 🚧🚧🚧
 
 # ChatApp
