@@ -17,7 +17,7 @@ export async function action({ request }: { request: Request }) {
     const formdata = await request.formData();
     const data = Object.fromEntries(formdata.entries());
     const participants = Object.keys(data).filter((key) => data[key] === "on");
-    const conversationName = data.conversationName;
+    const conversationName = data.conversationName as string;
     return await createConversation({ conversationName, participants });
   } catch (err) {
     console.log(err);
@@ -25,7 +25,7 @@ export async function action({ request }: { request: Request }) {
   }
 }
 
-export default function NewConversation() {
+export default function NewConversationPage() {
   const { friends } = useLoaderData() as Awaited<ReturnType<typeof loader>>;
   const data = useActionData();
   const fetcher = useFetcher();

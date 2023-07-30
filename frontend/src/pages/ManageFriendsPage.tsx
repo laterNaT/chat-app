@@ -11,7 +11,7 @@ export async function loader() {
   return { friends: friends };
 }
 
-export default function ManageFriends() {
+export default function ManageFriendsPage() {
   const { friends } = useLoaderData() as Awaited<ReturnType<typeof loader>>;
   const { pathname } = useLocation();
   const navigate = useNavigate();

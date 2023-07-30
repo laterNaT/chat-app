@@ -7,25 +7,25 @@ import {
   AuthenticationContextProvider,
   useAuthentication,
 } from "./context/AuthenticationContext";
-import AddFriend, {
+import AddFriendPage, {
   action as addFriendAction,
   loader as addFriendLoader,
-} from "./pages/AddFriend";
-import FriendRequests, {
+} from "./pages/AddFriendPage";
+import FriendRequestsPage, {
   action as friendRequestsAction,
   loader as friendRequestsLoader,
-} from "./pages/FriendRequests";
+} from "./pages/FriendRequestsPage";
 import HomePage, { loader as homePageLoader } from "./pages/HomePage";
-import Login from "./pages/Login";
-import ManageFriends, {
+import LoginPage from "./pages/LoginPage";
+import ManageFriendsPage, {
   loader as manageFriendsLoader,
-} from "./pages/ManageFriends";
-import NewConversation, {
+} from "./pages/ManageFriendsPage";
+import NewConversationPage, {
   action as newConversationAction,
   loader as newConversationLoader,
-} from "./pages/NewConversation";
-import Register from "./pages/Register";
-import Root from "./pages/Root";
+} from "./pages/NewConversationPage";
+import RegisterPage from "./pages/RegisterPage";
+import RootPage from "./pages/RootPage";
 import "./styles/Global.scss";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -39,15 +39,15 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Root />,
+    element: <RootPage />,
   },
   {
     path: "/login",
-    element: <Login />,
+    element: <LoginPage />,
   },
   {
     path: "/register",
-    element: <Register />,
+    element: <RegisterPage />,
   },
   {
     path: "/home",
@@ -63,7 +63,7 @@ const router = createBrowserRouter([
         loader: manageFriendsLoader,
         element: (
           <ProtectedRoute>
-            <ManageFriends />
+            <ManageFriendsPage />
           </ProtectedRoute>
         ),
       },
@@ -73,7 +73,7 @@ const router = createBrowserRouter([
         action: friendRequestsAction,
         element: (
           <ProtectedRoute>
-            <FriendRequests />
+            <FriendRequestsPage />
           </ProtectedRoute>
         ),
       },
@@ -83,7 +83,7 @@ const router = createBrowserRouter([
         action: addFriendAction,
         element: (
           <ProtectedRoute>
-            <AddFriend />
+            <AddFriendPage />
           </ProtectedRoute>
         ),
       },
@@ -93,7 +93,7 @@ const router = createBrowserRouter([
         action: newConversationAction,
         element: (
           <ProtectedRoute>
-            <NewConversation />
+            <NewConversationPage />
           </ProtectedRoute>
         ),
       },

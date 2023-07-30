@@ -45,7 +45,7 @@ export async function action({ request }: { request: Request }) {
   }
 }
 
-export default function AddFriend() {
+export default function AddFriendPage() {
   const { users } = useLoaderData() as Awaited<ReturnType<typeof loader>>;
   const fetcher = useFetcher();
   const { pathname } = useLocation();

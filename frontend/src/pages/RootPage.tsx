@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-export default function Root() {
+export default function RootPage() {
   return (
     <div>
       <h1>Welcome to chat-app</h1>

@@ -1,23 +1,23 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthentication } from "../context/AuthenticationContext";
-import "../styles/Login.scss";
 
-export default function Login() {
+export default function RegisterPage() {
   const navigate = useNavigate();
   const { session } = useAuthentication();
-  const { handleLogin } = useAuthentication();
+  const { handleRegister } = useAuthentication();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const login = async () => {
-    await handleLogin(username, password);
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    login().catch((err: Error) => setError(err.message));
+    try {
+      await handleRegister(username, password);
+      navigate("/login");
+    } catch (err: unknown) {
+      setError((err as Error).message);
+    }
   };
 
   useEffect(() => {
@@ -29,8 +29,8 @@ export default function Login() {
   return (
     <div className="container">
       <div className="login-form">
-        <h1>Welcome back! Please sign in to continue.</h1>
-        <form method="POST" onSubmit={handleSubmit}>
+        <h1>Welcome, register an account by submitting the form below.</h1>
+        <form method="post" onSubmit={handleSubmit}>
           <label>
             Username:
             <input
@@ -48,12 +48,12 @@ export default function Login() {
             />
           </label>
           <button type="submit" className="button">
-            Login
+            Register
           </button>
           {error && <p className="error-message">{error} 🚨️</p>}
         </form>
         <p style={{ textAlign: "center" }}>
-          No account? Register one <Link to="/register">here</Link>
+          Already have an account? Click <Link to="/login">here</Link>
         </p>
       </div>
     </div>

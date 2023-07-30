@@ -27,7 +27,7 @@ export async function action({ request }: { request: Request }) {
   };
 }
 
-export default function FriendRequests() {
+export default function FriendRequestsPage() {
   const { friendRequests } = useLoaderData() as Awaited<
     ReturnType<typeof loader>
   >;
