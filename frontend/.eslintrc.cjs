@@ -32,5 +32,6 @@ module.exports = {
       },
     ],
     "react-refresh/only-export-components": "off",
+    "@typescript-eslint/unbound-method": "off",
   },
 };
