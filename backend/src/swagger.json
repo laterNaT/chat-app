@@ -129,6 +129,9 @@
       "post": {
         "tags": ["Friends"],
         "summary": "Accept a friend request",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/SendFriendRequestRequest"
+        },
         "responses": {
           "200": {
             "description": "Friend request accepted successfully",
@@ -149,6 +152,9 @@
       "post": {
         "tags": ["Friends"],
         "summary": "Decline a friend request",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/DeclineFriendRequestRequest"
+        },
         "responses": {
           "200": {
             "description": "Friend request declined successfully",
@@ -366,6 +372,21 @@
               "required": ["username"],
               "properties": {
                 "username": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "DeclineFriendRequestRequest": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["id"],
+              "properties": {
+                "id": {
                   "type": "string"
                 }
               }
