@@ -1,27 +1,18 @@
-import { TFindUsersGetResponse } from "../types/userController.d";
+import createClient from "openapi-fetch";
+import { paths } from "../types/v1";
 
-const getUsers = async ({
-  username,
-}: {
-  username: string;
-}): Promise<TFindUsersGetResponse | undefined> => {
-  try {
-    if (!username) throw new Error("No username");
-    const res = await fetch("http://localhost:5000/api/users/" + username, {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
+const { GET } = createClient<paths>({
+  baseUrl: "http://localhost:5000",
+});
+
+// get all users using GET func. above to /api/users/search with params: username
+export function getUsers({ username }: { username: string }) {
+  return GET("/api/users/search/{username}", {
+    params: {
+      path: {
+        username,
       },
-    });
-    if (!res.ok) {
-      throw new Error("Error occured in fetch getUsers");
-    }
-    const resMsg = (await res.json()) as TFindUsersGetResponse;
-    return resMsg;
-  } catch (err) {
-    console.log(err);
-  }
-};
-
-export { getUsers };
+    },
+    credentials: "include",
+  });
+}
