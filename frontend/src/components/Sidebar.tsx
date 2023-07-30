@@ -14,9 +14,20 @@ export default function Sidebar({
     navigate("/home/manage-friends");
   };
 
+  const newConversation = () => {
+    navigate("/home/new-conversation");
+  };
+
   return (
     <div className="sidebar">
-      <p>TODO: render list of conversations</p>
+      <div className="conversations">
+        <h2>Conversations</h2>
+        <ul>
+          {conversations.map((conversation) => (
+            <li key={conversation._id}>{conversation.conversationName}</li>
+          ))}
+        </ul>
+      </div>
       <div className="button-group">
         <button
           className="button manage-friends-button"
@@ -24,7 +35,10 @@ export default function Sidebar({
         >
           Manage friends
         </button>
-        <button className="button new-conversation-button">
+        <button
+          className="button new-conversation-button"
+          onClick={newConversation}
+        >
           New conversation
         </button>
       </div>

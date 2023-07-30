@@ -20,6 +20,10 @@ import Login from "./pages/Login";
 import ManageFriends, {
   loader as manageFriendsLoader,
 } from "./pages/ManageFriends";
+import NewConversation, {
+  action as newConversationAction,
+  loader as newConversationLoader,
+} from "./pages/NewConversation";
 import Register from "./pages/Register";
 import Root from "./pages/Root";
 import "./styles/Global.scss";
@@ -80,6 +84,16 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <AddFriend />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "new-conversation",
+        loader: newConversationLoader,
+        action: newConversationAction,
+        element: (
+          <ProtectedRoute>
+            <NewConversation />
           </ProtectedRoute>
         ),
       },

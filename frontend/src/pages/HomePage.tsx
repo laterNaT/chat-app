@@ -1,6 +1,7 @@
 import { Outlet, useLoaderData } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import TopNavBar from "../components/TopNavBar";
+import { getConversations } from "../services/conversationService";
 
 type Message = {
   message: string;
@@ -20,37 +21,19 @@ export type TConversation = {
 };
 
 export async function loader() {
-  const data: TConversation = {
-    conversationID: 1,
-    conversationName: "bob and alice",
-    messages: [
-      {
-        message: "Hello",
-        from: "bob",
-        timestamp: 123456789,
-      },
-      {
-        message: "Hi",
-        from: "alice",
-        timestamp: 123456789,
-      },
-    ],
-    participants: [
-      {
-        name: "bob",
-      },
-      {
-        name: "alice",
-      },
-    ],
-  };
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  return data;
+  try {
+    const res = await getConversations();
+    return res.conversations;
+  } catch (err) {
+    console.log(err);
+    return [];
+  }
 }
 
 export default function HomePage() {
-  const res = useLoaderData() as TConversation;
-  const conversations = [res]; // NOTE: useLoaderData will return list when hooked up to backend
+  const { conversations } = useLoaderData();
+  console.log(conversations);
+  console.log(conversations.conversations);
   return (
     <>
       <TopNavBar />
