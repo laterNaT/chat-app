@@ -133,7 +133,7 @@ const fetchPendingFriendRequests = asyncHandler(
 
     const friendRequests = data.map((friendRequest) => {
       return {
-        id: friendRequest._id,
+        _id: friendRequest._id,
         sender: friendRequest.sender,
         receiver: friendRequest.receiver,
         status: friendRequest.status,
@@ -192,7 +192,7 @@ const findUsersNotFriended = asyncHandler(
 
       return {
         username: user.username,
-        id: user._id as unknown as string,
+        _id: user._id,
         status,
       };
     });

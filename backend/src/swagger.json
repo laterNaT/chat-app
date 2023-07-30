@@ -1,0 +1,484 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "Chat App API",
+    "version": "1.0"
+  },
+  "servers": [{ "url": "http://localhost:5000/" }],
+  "paths": {
+    "/api/users/register": {
+      "post": {
+        "tags": ["Users"],
+        "description": "Register a new user",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UserRegisterRequest"
+        },
+        "responses": {
+          "201": {
+            "description": "User registered successfully",
+            "$ref": "#/components/responses/GenericResponse"
+          },
+          "400": {
+            "description": "User already exists",
+            "$ref": "#/components/responses/GenericResponse"
+          },
+          "500": {
+            "description": "Server error",
+            "$ref": "#/components/responses/GenericResponse"
+          }
+        }
+      }
+    },
+    "/api/users/login": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Login a user",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UserLoginRequest"
+        },
+        "responses": {
+          "200": {
+            "description": "User logged in successfully",
+            "$ref": "#/components/responses/GenericResponse"
+          },
+          "400": {
+            "description": "User does not exist",
+            "$ref": "#/components/responses/GenericResponse"
+          },
+          "500": {
+            "description": "Server error",
+            "$ref": "#/components/responses/GenericResponse"
+          }
+        }
+      }
+    },
+    "/api/users/logout": {
+      "delete": {
+        "tags": ["Users"],
+        "summary": "Logout a user",
+        "responses": {
+          "200": {
+            "description": "User logged out successfully",
+            "$ref": "#/components/responses/GenericResponse"
+          },
+          "400": {
+            "description": "User does not exist",
+            "$ref": "#/components/responses/GenericResponse"
+          },
+          "500": {
+            "description": "Server error",
+            "$ref": "#/components/responses/GenericResponse"
+          }
+        }
+      }
+    },
+    "/api/users/search/{username}": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Search for a user",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "required": true,
+            "description": "Username of the user to search for",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/SearchUserResponse"
+          },
+          "400": {
+            "description": "User does not exist",
+            "$ref": "#/components/responses/GenericResponse"
+          },
+          "500": {
+            "description": "Server error",
+            "$ref": "#/components/responses/GenericResponse"
+          }
+        }
+      }
+    },
+    "/api/friends/requests/send": {
+      "post": {
+        "tags": ["Friends"],
+        "summary": "Send a friend request",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/SendFriendRequestRequest"
+        },
+        "responses": {
+          "200": {
+            "description": "Friend request sent successfully",
+            "$ref": "#/components/responses/GenericResponse"
+          },
+          "400": {
+            "description": "User does not exist",
+            "$ref": "#/components/responses/GenericResponse"
+          },
+          "500": {
+            "description": "Server error",
+            "$ref": "#/components/responses/GenericResponse"
+          }
+        }
+      }
+    },
+    "/api/friends/requests/accept": {
+      "post": {
+        "tags": ["Friends"],
+        "summary": "Accept a friend request",
+        "responses": {
+          "200": {
+            "description": "Friend request accepted successfully",
+            "$ref": "#/components/responses/GenericResponse"
+          },
+          "400": {
+            "description": "User does not exist",
+            "$ref": "#/components/responses/GenericResponse"
+          },
+          "500": {
+            "description": "Server error",
+            "$ref": "#/components/responses/GenericResponse"
+          }
+        }
+      }
+    },
+    "/api/friends/requests/decline": {
+      "post": {
+        "tags": ["Friends"],
+        "summary": "Decline a friend request",
+        "responses": {
+          "200": {
+            "description": "Friend request declined successfully",
+            "$ref": "#/components/responses/GenericResponse"
+          },
+          "400": {
+            "description": "User does not exist",
+            "$ref": "#/components/responses/GenericResponse"
+          },
+          "500": {
+            "description": "Server error",
+            "$ref": "#/components/responses/GenericResponse"
+          }
+        }
+      }
+    },
+    "/api/friends/requests/pending": {
+      "get": {
+        "tags": ["Friends"],
+        "summary": "Get pending friend requests",
+        "responses": {
+          "200": {
+            "description": "Friend requests retrieved successfully",
+            "$ref": "#/components/responses/FriendRequestsResponse"
+          },
+          "400": {
+            "description": "User does not exist",
+            "$ref": "#/components/responses/GenericResponse"
+          },
+          "500": {
+            "description": "Server error",
+            "$ref": "#/components/responses/GenericResponse"
+          }
+        }
+      }
+    },
+    "/api/friends/not-friended/{username}": {
+      "get": {
+        "tags": ["Friends"],
+        "summary": "Get users that are not friends with the user",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "required": true,
+            "description": "Username of the user to search for",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Users retrieved successfully",
+            "$ref": "#/components/responses/SearchUsersNotFriendedResponse"
+          },
+          "400": {
+            "description": "User does not exist",
+            "$ref": "#/components/responses/GenericResponse"
+          },
+          "500": {
+            "description": "Server error",
+            "$ref": "#/components/responses/GenericResponse"
+          }
+        }
+      }
+    },
+    "/api/friends/user": {
+      "get": {
+        "tags": ["Friends"],
+        "summary": "Get friends of the user",
+        "responses": {
+          "200": {
+            "description": "Friends retrieved successfully",
+            "$ref": "#/components/responses/GetFriendsResponse"
+          },
+          "400": {
+            "description": "User does not exist",
+            "$ref": "#/components/responses/GenericResponse"
+          },
+          "500": {
+            "description": "Server error",
+            "$ref": "#/components/responses/GenericResponse"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "_id": {
+            "type": "string"
+          }
+        }
+      },
+      "NewUser": {
+        "type": "object",
+        "required": ["username", "password"],
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "UserWithStatus": {
+        "type": "object",
+        "required": ["username", "_id", "status"],
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "FriendRequest": {
+        "type": "object",
+        "required": ["sender", "receiver", "status", "_id"],
+        "properties": {
+          "sender": {
+            "type": "object",
+            "properties": {
+              "username": {
+                "type": "string"
+              },
+              "_id": {
+                "type": "string"
+              }
+            }
+          },
+          "receiver": {
+            "type": "object",
+            "properties": {
+              "username": {
+                "type": "string"
+              },
+              "_id": {
+                "type": "string"
+              }
+            }
+          },
+          "status": {
+            "type": "string"
+          },
+          "_id": {
+            "type": "string"
+          }
+        }
+      },
+      "GenericErrorModel": {
+        "type": "object",
+        "required": ["message"],
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "UserRegisterRequest": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["username", "password"],
+              "properties": {
+                "username": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "UserLoginRequest": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["username", "password"],
+              "properties": {
+                "username": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "SendFriendRequestRequest": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["username"],
+              "properties": {
+                "username": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "SearchUserResponse": {
+        "description": "User found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["users"],
+              "properties": {
+                "users": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                },
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "FriendRequestsResponse": {
+        "description": "Friend requests found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["friendRequests"],
+              "properties": {
+                "friendRequests": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FriendRequest"
+                  }
+                },
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "SearchUsersNotFriendedResponse": {
+        "description": "Users found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["users"],
+              "properties": {
+                "users": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserWithStatus"
+                  }
+                },
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "GetFriendsResponse": {
+        "description": "Friends found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["friends"],
+              "properties": {
+                "friends": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                },
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "GenericResponse": {
+        "description": "Generic response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["message"],
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

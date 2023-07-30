@@ -7,6 +7,8 @@ import userModel from "../models/userModel";
 type ID = string;
 
 const createConversation = asyncHandler(async (req: Request, res: Response) => {
+  let conversationId: string;
+
   const { conversationName, participants } = req.body as {
     conversationName: string;
     participants: ID[];
@@ -16,17 +18,20 @@ const createConversation = asyncHandler(async (req: Request, res: Response) => {
     throw new Error("No name or members");
   }
 
+  participants.push(req.session.userId!.toString());
+
   const conversationStarter = req.session.userId;
 
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
     const conversation = await conversationModel.create(
-      {
-        conversationName,
-        participants,
-        conversationStarter,
-      },
+      [
+        {
+          conversationName,
+          participants,
+        },
+      ],
       { session },
     );
 
@@ -35,23 +40,25 @@ const createConversation = asyncHandler(async (req: Request, res: Response) => {
       throw new Error("Could not create conversation");
     }
 
-    const createdConversation = await conversationModel.findOne({
-      conversationName,
-    });
+    const createdConversation = await conversationModel
+      .findOne({
+        conversationName,
+      })
+      .session(session);
 
     if (!createdConversation) {
       res.status(400);
       throw new Error("Could not find created conversation");
     }
 
-    const conversationId = createdConversation._id;
+    conversationId = createdConversation._id.toString();
     const users = await userModel
       .find({ _id: { $in: participants } })
       .session(session);
 
     await Promise.all(
       users.map(async (user) => {
-        user.conversations.push(conversationId);
+        user.conversations.push(createdConversation._id);
         await user.save({ session });
       }),
     );
@@ -64,20 +71,22 @@ const createConversation = asyncHandler(async (req: Request, res: Response) => {
     session.endSession();
   }
 
+  // return the id of the created conversation and a success message
   res.status(200).json({
     message: "Conversation created successfully",
+    conversationId,
   });
 });
 
 const fetchConversations = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.session.userId;
 
-  const conversations = await userModel.findById(userId).populate({
-    path: "conversations",
-    populate: {
-      path: "conversationName",
-    },
-  });
+  const conversations = await userModel
+    .findById(userId)
+    .populate({
+      path: "conversations",
+    })
+    .select("conversations");
 
   res.status(200).json({
     message: "Conversations found successfully",

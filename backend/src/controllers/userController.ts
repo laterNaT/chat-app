@@ -3,7 +3,6 @@ import { Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import User from "../models/userModel";
 import {
-  TFindUsersGetResponse,
   TLoginUserPostResponse,
   TLogoutUserDeleteResponse,
   TRegisterUserPostResponse,
@@ -116,14 +115,14 @@ const searchUsers = asyncHandler(async (req: Request, res: Response) => {
   const match = users.map((user) => {
     return {
       username: user.username,
-      id: user._id as unknown as string,
+      _id: user._id,
     };
   });
 
   res.status(200).json({
     message: "Users found successfully",
     users: match,
-  } as TFindUsersGetResponse);
+  });
 });
 
 export { loginUser, logoutUser, registerUser, searchUsers };
