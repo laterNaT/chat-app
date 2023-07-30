@@ -1,19 +1,10 @@
 /* eslint-disable react-refresh/only-export-components */
+import { Form, useFetcher, useLoaderData, useLocation } from "react-router-dom";
 import {
-  Form,
-  useActionData,
-  useFetcher,
-  useLoaderData,
-  useLocation,
-} from "react-router-dom";
-import { getNonFriends, sendFriendRequest } from "../services/friendService";
+  getUsersNotFriended,
+  sendFriendRequest,
+} from "../services/friendService";
 import "../styles/AddFriend.scss";
-
-type TUser = {
-  username: string;
-  id: number;
-  status: "none" | "pending" | "accepted" | "rejected";
-};
 
 export async function loader({ request }: { request: Request }) {
   const url = new URL(request.url);
@@ -21,14 +12,29 @@ export async function loader({ request }: { request: Request }) {
   if (!searchTerm) {
     return { users: [] };
   }
-  return await getNonFriends({ username: searchTerm });
+  const { data, error } = await getUsersNotFriended({ username: searchTerm });
+  if (error) {
+    console.log(error);
+    return { users: [] };
+  }
+  return { users: data.users };
 }
 
 export async function action({ request }: { request: Request }) {
   const data = await request.formData();
-  const username = data.get("username2");
+  const username = data.get("username2") as string;
   try {
-    await sendFriendRequest({ username: username as string });
+    if (!username) {
+      return {
+        success: false,
+      };
+    }
+    const res = await sendFriendRequest({ username });
+    if (!res.data) {
+      return {
+        success: false,
+      };
+    }
     return {
       success: true,
     };
@@ -41,8 +47,7 @@ export async function action({ request }: { request: Request }) {
 }
 
 export default function AddFriend() {
-  const { users } = useLoaderData() as { users: TUser[] };
-  const success = useActionData();
+  const { users } = useLoaderData() as Awaited<ReturnType<typeof loader>>;
   const fetcher = useFetcher();
   const { pathname } = useLocation();
 
@@ -63,7 +68,6 @@ export default function AddFriend() {
 
   return (
     <>
-      {success && <p>Friend request sent!</p>}
       <Form
         className="search-form"
         method="get"
@@ -81,7 +85,7 @@ export default function AddFriend() {
           <h1 className="results-header">Search results</h1>
           <ul className="results-list">
             {users.map((user) => (
-              <li className="results-item" key={user.id}>
+              <li className="results-item" key={user._id}>
                 <p className="user-name">{user.username}</p>
                 <fetcher.Form method="post" action={pathname}>
                   <button className="button" style={styleBtn(user.status)}>

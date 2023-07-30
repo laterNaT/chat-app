@@ -1,17 +1,18 @@
 import { useLoaderData, useLocation, useNavigate } from "react-router-dom";
 import { getFriends } from "../services/friendService";
-import { TGetUserFriendsResponse } from "../types/friendController";
 
 export async function loader() {
-  const friends = await getFriends();
-  if (!friends) {
+  const { data, error } = await getFriends();
+  if (error) {
+    console.log(error);
     return { friends: [] };
   }
-  return friends;
+  const friends = data.friends;
+  return { friends: friends };
 }
 
 export default function ManageFriends() {
-  const { friends } = useLoaderData() as TGetUserFriendsResponse;
+  const { friends } = useLoaderData() as Awaited<ReturnType<typeof loader>>;
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
