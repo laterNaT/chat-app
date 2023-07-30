@@ -1,6 +1,13 @@
 import { createContext, useContext } from "react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 
+import createClient from "openapi-fetch";
+import { paths } from "../types/v1";
+
+const { POST, DELETE } = createClient<paths>({
+  baseUrl: "http://localhost:5000",
+});
+
 type AuthenticationContextType = {
   session: string | null;
   handleLogin: (username: string, password: string) => Promise<void>;
@@ -10,15 +17,6 @@ type AuthenticationContextType = {
 
 type AuthenticationContextProviderProps = {
   children: React.ReactNode;
-};
-
-type LoginResponse = {
-  session?: string;
-  message?: string;
-};
-
-type LogoutResponse = {
-  message: string;
 };
 
 const AuthenticationContext = createContext<AuthenticationContextType>(
@@ -34,24 +32,28 @@ export function AuthenticationContextProvider({
 }: AuthenticationContextProviderProps) {
   const [session, setSession] = useLocalStorage<string | null>("session");
 
-  const handleLogin = async (
-    username: string,
-    password: string
-  ): Promise<void> => {
+  const handleLogin = async (username: string, password: string) => {
     try {
-      const res = await fetch("http://localhost:5000/api/users/login", {
-        method: "POST",
-        body: JSON.stringify({ username, password }),
-        credentials: "include",
+      if (!username || !password) {
+        throw new Error("Username and password required");
+      }
+
+      const { data, error } = await POST("/api/users/login", {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
+        body: {
+          username,
+          password,
+        },
       });
-      const resMsg = (await res.json()) as LoginResponse;
-      if (!res.ok) {
-        throw new Error(resMsg.message);
+
+      if (error) {
+        throw new Error(error.message);
       }
-      setSession(resMsg.session!);
+
+      setSession(data.session);
     } catch (err) {
       console.log("Error occured in login");
       throw err;
@@ -63,17 +65,19 @@ export function AuthenticationContextProvider({
       if (!username || !password) {
         throw new Error("Username and password required");
       }
-      const res = await fetch("http://localhost:5000/api/users/register", {
-        method: "POST",
-        body: JSON.stringify({ username, password }),
-        credentials: "include",
+      const { error } = await POST("/api/users/register", {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
+        body: {
+          username,
+          password,
+        },
       });
-      const resMsg = (await res.json()) as { message: string };
-      if (!res.ok) {
-        throw new Error(resMsg.message);
+
+      if (error) {
+        throw new Error(error.message);
       }
     } catch (err) {
       console.log("Error occured in register");
@@ -84,16 +88,11 @@ export function AuthenticationContextProvider({
 
   const handleLogout = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/users/logout", {
-        method: "delete",
+      const { error } = await DELETE("/api/users/logout", {
         credentials: "include",
       });
-      if (!res.ok) {
-        throw new Error("Logout failed");
-      }
-      const msg = (await res.json()) as LogoutResponse;
-      if (!res.ok) {
-        throw new Error(msg.message);
+      if (error) {
+        throw new Error(error.message);
       }
       setSession(null);
     } catch (err) {
