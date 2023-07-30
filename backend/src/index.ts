@@ -37,7 +37,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/api/users", userRoutes);
 app.use("/api/friends", friendRoutes);
-app.use("/api/conversation", conversationRoutes);
+app.use("/api/conversations", conversationRoutes);
 
 const io = new Server(httpServer, {
   cors: {
