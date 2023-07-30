@@ -151,6 +151,33 @@ export interface paths {
       };
     };
   };
+  "/api/conversations/create": {
+    /** Create a conversation */
+    post: {
+      requestBody: components["requestBodies"]["ConversationCreateRequest"];
+      responses: {
+        /** @description Conversation created successfully */
+        200: components["responses"]["ConversationCreateResponse"];
+        /** @description Could not create conversation */
+        400: components["responses"]["GenericResponse"];
+        /** @description Server error */
+        500: components["responses"]["GenericResponse"];
+      };
+    };
+  };
+  "/api/conversations/": {
+    /** Get conversations of the user */
+    get: {
+      responses: {
+        /** @description Conversations retrieved successfully */
+        200: components["responses"]["GetConversationResponse"];
+        /** @description Could not retrieve conversations */
+        400: components["responses"]["GenericResponse"];
+        /** @description Server error */
+        500: components["responses"]["GenericResponse"];
+      };
+    };
+  };
 }
 
 export type webhooks = Record<string, never>;
@@ -185,6 +212,10 @@ export interface components {
       };
       status: string;
       _id: string;
+    };
+    Conversation: {
+      _id: string;
+      conversationName: string;
     };
     GenericErrorModel: {
       message: string;
@@ -236,6 +267,24 @@ export interface components {
         };
       };
     };
+    /** @description Conversation created successfully */
+    ConversationCreateResponse: {
+      content: {
+        "application/json": {
+          message: string;
+          conversationId: string;
+        };
+      };
+    };
+    /** @description Conversations retrieved successfully */
+    GetConversationResponse: {
+      content: {
+        "application/json": {
+          message: string;
+          conversations: components["schemas"]["Conversation"][];
+        };
+      };
+    };
     /** @description Generic response */
     GenericResponse: {
       content: {
@@ -271,6 +320,15 @@ export interface components {
       content: {
         "application/json": {
           id: string;
+        };
+      };
+    };
+    ConversationCreateRequest?: {
+      content: {
+        "application/json": {
+          conversationName: string;
+          /** @description Array of user ids */
+          participants: string[];
         };
       };
     };

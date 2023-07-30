@@ -374,7 +374,7 @@
       },
       "Conversation": {
         "type": "object",
-        "required": ["_id"],
+        "required": ["_id", "conversationName"],
         "properties": {
           "_id": {
             "type": "string"
