@@ -4,23 +4,27 @@ import mongoose from "mongoose";
 import conversationModel from "../models/conversationModel";
 import userModel from "../models/userModel";
 
-type ID = string;
-
 const createConversation = asyncHandler(async (req: Request, res: Response) => {
   let conversationId: string;
 
   const { conversationName, participants } = req.body as {
     conversationName: string;
-    participants: ID[];
+    participants: mongoose.Types.ObjectId[];
   };
+
   if (!conversationName || !participants) {
     res.status(400);
     throw new Error("No name or members");
   }
 
-  participants.push(req.session.userId!.toString());
+  if (Array.isArray(participants) === false) {
+    res.status(400);
+    throw new Error("Participants must be an array");
+  }
 
   const conversationStarter = req.session.userId;
+
+  participants.push(conversationStarter!);
 
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -29,6 +33,7 @@ const createConversation = asyncHandler(async (req: Request, res: Response) => {
       [
         {
           conversationName,
+          conversationStarter,
           participants,
         },
       ],
@@ -85,12 +90,18 @@ const fetchConversations = asyncHandler(async (req: Request, res: Response) => {
     .findById(userId)
     .populate({
       path: "conversations",
+      select: "conversationName",
     })
     .select("conversations");
 
+  if (!conversations) {
+    res.status(400);
+    throw new Error("Could not find conversations");
+  }
+
   res.status(200).json({
     message: "Conversations found successfully",
-    conversations,
+    conversations: conversations["conversations"],
   });
 });
 
