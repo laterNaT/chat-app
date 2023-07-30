@@ -25,7 +25,7 @@ export interface paths {
       requestBody: components["requestBodies"]["UserLoginRequest"];
       responses: {
         /** @description User logged in successfully */
-        200: components["responses"]["GenericResponse"];
+        200: components["responses"]["LoginUserResponse"];
         /** @description User does not exist */
         400: components["responses"]["GenericResponse"];
         /** @description Server error */
@@ -161,6 +161,10 @@ export interface components {
       username?: string;
       _id?: string;
     };
+    LoginUser: {
+      username: string;
+      password: string;
+    };
     NewUser: {
       username: string;
       password: string;
@@ -223,6 +227,15 @@ export interface components {
         };
       };
     };
+    /** @description User logged in successfully */
+    LoginUserResponse: {
+      content: {
+        "application/json": {
+          session: string;
+          message: string;
+        };
+      };
+    };
     /** @description Generic response */
     GenericResponse: {
       content: {
@@ -236,10 +249,7 @@ export interface components {
   requestBodies: {
     UserRegisterRequest?: {
       content: {
-        "application/json": {
-          username: string;
-          password: string;
-        };
+        "application/json": components["schemas"]["NewUser"];
       };
     };
     UserLoginRequest?: {

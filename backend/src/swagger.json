@@ -39,7 +39,7 @@
         "responses": {
           "200": {
             "description": "User logged in successfully",
-            "$ref": "#/components/responses/GenericResponse"
+            "$ref": "#/components/responses/LoginUserResponse"
           },
           "400": {
             "description": "User does not exist",
@@ -256,6 +256,18 @@
           }
         }
       },
+      "LoginUser": {
+        "type": "object",
+        "required": ["username", "password"],
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
       "NewUser": {
         "type": "object",
         "required": ["username", "password"],
@@ -332,16 +344,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "type": "object",
-              "required": ["username", "password"],
-              "properties": {
-                "username": {
-                  "type": "string"
-                },
-                "password": {
-                  "type": "string"
-                }
-              }
+              "$ref": "#/components/schemas/NewUser"
             }
           }
         }
@@ -475,6 +478,25 @@
                   "items": {
                     "$ref": "#/components/schemas/User"
                   }
+                },
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "LoginUserResponse": {
+        "description": "User logged in successfully",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["session", "message"],
+              "properties": {
+                "session": {
+                  "type": "string"
                 },
                 "message": {
                   "type": "string"
