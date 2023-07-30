@@ -2,11 +2,6 @@ import bcrypt from "bcrypt";
 import { Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import User from "../models/userModel";
-import {
-  TLoginUserPostResponse,
-  TLogoutUserDeleteResponse,
-  TRegisterUserPostResponse,
-} from "../types/my_types/friendController";
 
 const registerUser = asyncHandler(async (req: Request, res: Response) => {
   if (!req.body.username) {
@@ -48,7 +43,7 @@ const registerUser = asyncHandler(async (req: Request, res: Response) => {
   // send the response
   res.status(201).json({
     message: "User created successfully",
-  } as TRegisterUserPostResponse);
+  });
 });
 
 const loginUser = asyncHandler(async (req: Request, res: Response) => {
@@ -75,7 +70,7 @@ const loginUser = asyncHandler(async (req: Request, res: Response) => {
   res.status(200).json({
     message: "User logged in successfully",
     session: req.sessionID,
-  } as TLoginUserPostResponse);
+  });
 });
 
 const logoutUser = asyncHandler(async (req: Request, res: Response) => {
@@ -87,7 +82,7 @@ const logoutUser = asyncHandler(async (req: Request, res: Response) => {
         res.clearCookie("session");
         res.status(200).json({
           message: "User logged out successfully",
-        } as TLogoutUserDeleteResponse);
+        });
       }
     });
   } else {
