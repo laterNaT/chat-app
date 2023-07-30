@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 import { Form, useFetcher, useLoaderData, useLocation } from "react-router-dom";
 import {
   getUsersNotFriended,
