@@ -1,3 +1,10 @@
+import createClient from "openapi-fetch";
+import { paths } from "../types/v1";
+
+const { GET, POST } = createClient<paths>({
+  baseUrl: "http://localhost:5000",
+});
+
 const createConversation = async ({
   conversationName,
   participants,
@@ -9,23 +16,21 @@ const createConversation = async ({
     if (!conversationName || !participants) {
       throw new Error("No name or members");
     }
-    const res = await fetch("http://localhost:5000/api/conversation/create", {
-      method: "POST",
+    const { data, error } = await POST("/api/conversations/create", {
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
+      body: {
         conversationName,
         participants,
-      }),
+      },
     });
-    if (!res.ok) {
-      throw new Error("Error occured in fetch createConversation");
+
+    if (error) {
+      throw new Error(error.message);
     }
-    const resMsg = await res.json();
-    console.log("CREATE CONVERSATION RES", res);
-    return resMsg;
+    return data;
   } catch (err) {
     console.log(err);
   }
@@ -33,17 +38,21 @@ const createConversation = async ({
 
 const getConversations = async () => {
   try {
-    const res = await fetch("http://localhost:5000/api/conversation", {
-      method: "GET",
+    const { data, error } = await GET("/api/conversations/", {
       credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
-    if (!res.ok) {
-      throw new Error("Error occured in fetch getConversations");
+
+    if (error) {
+      throw new Error(error.message);
     }
-    const resMsg = await res.json();
-    return resMsg;
+
+    return data;
   } catch (err) {
     console.log(err);
+    throw new Error("Could not get conversations");
   }
 };
 

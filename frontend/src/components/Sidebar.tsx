@@ -1,11 +1,14 @@
 import { useNavigate } from "react-router-dom";
-import { TConversation } from "../pages/HomePage";
 import "../styles/Sidebar.scss";
+import { paths } from "../types/v1";
+
+export type TConversations =
+  paths["/api/conversations/"]["get"]["responses"]["200"]["content"]["application/json"]["conversations"];
 
 export default function Sidebar({
   conversations,
 }: {
-  conversations: TConversation[];
+  conversations: TConversations;
 }) {
   const navigate = useNavigate();
 

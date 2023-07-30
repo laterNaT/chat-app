@@ -1,24 +1,7 @@
 import { Outlet, useLoaderData } from "react-router-dom";
-import Sidebar from "../components/Sidebar";
+import Sidebar, { TConversations } from "../components/Sidebar";
 import TopNavBar from "../components/TopNavBar";
 import { getConversations } from "../services/conversationService";
-
-type Message = {
-  message: string;
-  from: string;
-  timestamp: number;
-};
-
-type Participant = {
-  name: string;
-};
-
-export type TConversation = {
-  conversationID: number;
-  conversationName: string;
-  messages: Message[];
-  participants: Participant[];
-};
 
 export async function loader() {
   try {
@@ -31,9 +14,8 @@ export async function loader() {
 }
 
 export default function HomePage() {
-  const { conversations } = useLoaderData();
-  console.log(conversations);
-  console.log(conversations.conversations);
+  const conversations = useLoaderData() as TConversations;
+
   return (
     <>
       <TopNavBar />
