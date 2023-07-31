@@ -66,6 +66,13 @@ const loginUser = asyncHandler(async (req: Request, res: Response) => {
   // save the user id
   req.session.userId = user._id;
 
+  req.session.save((err) => {
+    if (err) {
+      res.status(400);
+      throw new Error("Error saving session");
+    }
+  });
+
   // send the response
   res.status(200).json({
     message: "User logged in successfully",
