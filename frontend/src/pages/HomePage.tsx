@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { Outlet, useLoaderData } from "react-router-dom";
+import { Socket } from "socket.io-client";
 import Sidebar, { TConversations } from "../components/Sidebar";
 import TopNavBar from "../components/TopNavBar";
 import { getConversations } from "../services/conversationService";
@@ -13,21 +15,28 @@ export async function loader() {
   }
 }
 
-export default function HomePage() {
+export default function HomePage({ socket }: { socket: Socket }) {
   const conversations = useLoaderData() as TConversations;
+
+  useEffect(() => {
+    socket.connect();
+    return () => {
+      socket.disconnect();
+    };
+  }, [socket]);
 
   return (
     <>
-      <TopNavBar />
+      <TopNavBar socket={socket} />
       <div style={{ display: "flex" }}>
         <Sidebar conversations={conversations} />
         <div
           style={{
-            width: "100%",
             display: "flex",
             flexDirection: "column",
-            alignItems: "center",
-            marginTop: "3rem",
+            width: "100%",
+            height: "100vh",
+            margin: "16px",
           }}
         >
           <Outlet />

@@ -1,13 +1,23 @@
 import { Link } from "react-router-dom";
+import { Socket } from "socket.io-client";
+import {
+  ClientToServerEvents,
+  ServerToClientEvents,
+} from "../../../backend/src/types/my_types/sockets";
 import { useAuthentication } from "../context/AuthenticationContext";
 import "../styles/TopNavBar.scss";
 
-export default function TopNavBar() {
+export default function TopNavBar({
+  socket,
+}: {
+  socket: Socket<ServerToClientEvents, ClientToServerEvents>;
+}) {
   const { handleLogout } = useAuthentication();
 
   const logout = async () => {
     try {
       await handleLogout();
+      socket.disconnect();
     } catch (err) {
       console.error("error: ", err);
     }

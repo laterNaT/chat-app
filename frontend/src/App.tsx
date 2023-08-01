@@ -3,6 +3,12 @@ import {
   RouterProvider,
   createBrowserRouter,
 } from "react-router-dom";
+import { Socket, io } from "socket.io-client";
+// import "../../backend/src/types/my_types/sockets";
+import {
+  ClientToServerEvents,
+  ServerToClientEvents,
+} from "../../backend/src/types/my_types/sockets";
 import {
   AuthenticationContextProvider,
   useAuthentication,
@@ -11,6 +17,7 @@ import AddFriendPage, {
   action as addFriendAction,
   loader as addFriendLoader,
 } from "./pages/AddFriendPage";
+import ConversationPage from "./pages/ConversationPage";
 import FriendRequestsPage, {
   action as friendRequestsAction,
   loader as friendRequestsLoader,
@@ -27,6 +34,16 @@ import NewConversationPage, {
 import RegisterPage from "./pages/RegisterPage";
 import RootPage from "./pages/RootPage";
 import "./styles/Global.scss";
+
+const socketURL = "http://localhost:5000";
+
+const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
+  socketURL,
+  {
+    autoConnect: false, // don't connect until user is authenticated
+    withCredentials: true, // IMPORTANT
+  }
+);
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { session } = useAuthentication();
@@ -54,7 +71,7 @@ const router = createBrowserRouter([
     loader: homePageLoader,
     element: (
       <ProtectedRoute>
-        <HomePage />
+        <HomePage socket={socket} />
       </ProtectedRoute>
     ),
     children: [
@@ -94,6 +111,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <NewConversationPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "conversations/:conversationId",
+        element: (
+          <ProtectedRoute>
+            <ConversationPage socket={socket} />
           </ProtectedRoute>
         ),
       },

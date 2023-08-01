@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import "../styles/Sidebar.scss";
 import { paths } from "../types/v1";
+import ConversationSidebar from "./ConversationSidebar";
 
 export type TConversations =
   paths["/api/conversations/"]["get"]["responses"]["200"]["content"]["application/json"]["conversations"];
@@ -27,7 +28,7 @@ export default function Sidebar({
         <h2>Conversations</h2>
         <ul>
           {conversations.map((conversation) => (
-            <li key={conversation._id}>{conversation.conversationName}</li>
+            <ConversationSidebar {...conversation} key={conversation._id} />
           ))}
         </ul>
       </div>

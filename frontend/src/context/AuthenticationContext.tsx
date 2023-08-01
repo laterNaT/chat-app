@@ -10,6 +10,7 @@ const { POST, DELETE } = createClient<paths>({
 
 type AuthenticationContextType = {
   session: string | null;
+  username: string | null;
   handleLogin: (username: string, password: string) => Promise<void>;
   handleLogout: () => Promise<void>;
   handleRegister: (username: string, password: string) => Promise<void>;
@@ -31,6 +32,7 @@ export function AuthenticationContextProvider({
   children,
 }: AuthenticationContextProviderProps) {
   const [session, setSession] = useLocalStorage<string | null>("session");
+  const [username, setUsername] = useLocalStorage<string | null>("username");
 
   const handleLogin = async (username: string, password: string) => {
     try {
@@ -54,6 +56,7 @@ export function AuthenticationContextProvider({
       }
 
       setSession(data.session);
+      setUsername(username);
     } catch (err) {
       console.log("Error occured in login");
       throw err;
@@ -103,6 +106,7 @@ export function AuthenticationContextProvider({
 
   const value = {
     session,
+    username,
     handleLogin,
     handleLogout,
     handleRegister,
