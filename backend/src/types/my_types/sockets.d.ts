@@ -2,11 +2,12 @@ export interface Message {
   message: string;
   username: string;
   room: string;
-  sentAt: string;
+  date: Date;
 }
 
 export interface ServerToClientEvents {
   receiveMessage: (data: Message) => void;
+  conversationHistory: (data: Message[]) => void;
 }
 
 export interface ClientToServerEvents {

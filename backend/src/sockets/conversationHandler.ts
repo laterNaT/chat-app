@@ -1,4 +1,5 @@
 import { Server, Socket } from "socket.io";
+import conversationModel from "../models/conversationModel";
 import {
   ClientToServerEvents,
   Message,
@@ -9,17 +10,54 @@ const registerConversationHandler = (
   io: Server<ClientToServerEvents, ServerToClientEvents>,
   socket: Socket<ClientToServerEvents, ServerToClientEvents>,
 ) => {
-  const joinConversation = (conversationId: string) => {
+  const joinConversation = async (conversationId: string) => {
+    // TODO: IMPORTANT WRAP IN TRY CATCH
+    // TODO: MOVE DB LOGIC TO OWN FILE
     socket.join(conversationId);
+    const messages = await conversationModel
+      .findById(conversationId)
+      .select("messages")
+      .populate({
+        path: "messages.sender",
+        select: "username",
+      })
+      .exec();
+
+    if (!messages) {
+      socket.emit("conversationHistory", []);
+      return;
+    }
+
+    const mappedMessages = messages?.messages.map((message) => {
+      return {
+        message: message.message,
+        username: (message.sender as any).username,
+        room: conversationId,
+        date: message.date,
+      };
+    });
+
+    socket.emit("conversationHistory", mappedMessages);
   };
 
   const leaveConversation = (conversationId: string) => {
     socket.leave(conversationId);
   };
 
-  const sendMessage = (data: Message) => {
-    const { message, username, room, sentAt } = data;
+  const sendMessage = async (data: Message) => {
+    // TODO: IMPORTANT WRAP IN TRY CATCH
+    // TODO: MOVE DB LOGIC TO OWN FILE
+    const { message, username, room, date } = data;
     io.in(room).emit("receiveMessage", data);
+
+    const conversation = await conversationModel.findById(room);
+    conversation?.messages.push({
+      sender: socket.request.session.userId,
+      message,
+      date: date,
+    });
+
+    await conversation?.save();
   };
 
   const disconnect = () => {
