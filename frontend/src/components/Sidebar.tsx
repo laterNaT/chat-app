@@ -1,5 +1,5 @@
+import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import "../styles/Sidebar.scss";
 import { paths } from "../types/v1";
 import ConversationSidebar from "./ConversationSidebar";
 
@@ -23,28 +23,20 @@ export default function Sidebar({
   };
 
   return (
-    <div className="sidebar">
-      <div className="conversations">
-        <h2>Conversations</h2>
-        <ul>
-          {conversations.map((conversation) => (
-            <ConversationSidebar {...conversation} key={conversation._id} />
-          ))}
-        </ul>
+    <div className="px-2 d-flex flex-column justify-content-between pb-4 bg-light ">
+      <h2>Conversations</h2>
+      <div className="d-flex flex-column gap-2">
+        {conversations.map((conversation, index) => (
+          <ConversationSidebar key={index} {...conversation} />
+        ))}
       </div>
-      <div className="button-group">
-        <button
-          className="button manage-friends-button"
-          onClick={manageFriends}
-        >
+      <div className="d-flex flex-column gap-2 mt-4">
+        <Button variant="primary" onClick={manageFriends}>
           Manage friends
-        </button>
-        <button
-          className="button new-conversation-button"
-          onClick={newConversation}
-        >
+        </Button>
+        <Button variant="primary" onClick={newConversation}>
           New conversation
-        </button>
+        </Button>
       </div>
     </div>
   );

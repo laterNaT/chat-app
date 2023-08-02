@@ -1,5 +1,5 @@
+import { Card } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import "../styles/ConversationBtn.scss";
 import { TConversations } from "./Sidebar";
 type ConversationProps = TConversations[number];
 
@@ -15,8 +15,8 @@ export default function ConversationSidebar({
   };
 
   return (
-    <li onClick={handleClick} className="conversation-btn">
-      {conversationName}
-    </li>
+    <Card className="conversation-sidebar" onClick={handleClick}>
+      <Card.Body>{conversationName}</Card.Body>
+    </Card>
   );
 }

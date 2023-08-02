@@ -1,3 +1,12 @@
+import {
+  Button,
+  Card,
+  Col,
+  Container,
+  Form,
+  ListGroup,
+  Row,
+} from "react-bootstrap";
 import { useActionData, useFetcher, useLoaderData } from "react-router-dom";
 import { createConversation } from "../services/conversationService";
 import { getFriends } from "../services/friendService";
@@ -32,22 +41,45 @@ export default function NewConversationPage() {
   console.log(data);
 
   return (
-    <>
-      <h1>Create a new conversation</h1>
-      <p>Select friends to add to the conversation below</p>
-      {/* render list of friends with check box to select friends to add to conversation */}
-      <fetcher.Form method="post" action="/home/new-conversation">
-        <input type="text" name="conversationName" />
-        <ul style={{ listStyle: "none" }}>
-          {friends.map((friend) => (
-            <li key={friend._id}>
-              <input name={friend._id} type="checkbox" />
-              {friend.username}
-            </li>
-          ))}
-        </ul>
-        <button className="button">Create conversation</button>
-      </fetcher.Form>
-    </>
+    <Container className="mt-5" fluid>
+      <Row className="justify-content-center">
+        <Col xs={12} sm={10} md={8} lg={6}>
+          <Card>
+            <Card.Body>
+              <Card.Title className="mb-4 text-center">
+                Create a new conversation
+              </Card.Title>
+              <fetcher.Form method="post" action="/home/new-conversation">
+                <Form.Group className="mb-3">
+                  <Form.Label>Conversation Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="conversationName"
+                    placeholder="Enter conversation name"
+                  />
+                </Form.Group>
+                <Form.Label>
+                  Select friends to add to the conversation:
+                </Form.Label>
+                <ListGroup variant="flush">
+                  {friends.map((friend) => (
+                    <ListGroup.Item key={friend._id}>
+                      <Form.Check
+                        id={friend._id}
+                        name={friend._id}
+                        label={friend.username}
+                      />
+                    </ListGroup.Item>
+                  ))}
+                </ListGroup>
+                <Button variant="primary" type="submit" className="mt-3 w-100">
+                  Create conversation
+                </Button>
+              </fetcher.Form>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
   );
 }

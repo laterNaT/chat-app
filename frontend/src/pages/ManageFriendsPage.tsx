@@ -1,3 +1,4 @@
+import { Button, Card, Col, Container, ListGroup, Row } from "react-bootstrap";
 import { useLoaderData, useLocation, useNavigate } from "react-router-dom";
 import { getFriends } from "../services/friendService";
 
@@ -25,29 +26,31 @@ export default function ManageFriendsPage() {
   };
 
   return (
-    <>
-      <h1>Your friends</h1>
-      <ul>
-        {friends.map((friend) => (
-          <li key={friend._id}>{friend.username}</li>
-        ))}
-      </ul>
-      <div style={{ display: "flex", gap: "20px" }}>
-        <button
-          className="button"
-          style={{ width: "200px" }}
-          onClick={handleAddNewFriend}
-        >
-          Add new friend
-        </button>
-        <button
-          className="button"
-          style={{ width: "200px" }}
-          onClick={handleFriendRequests}
-        >
-          Friend requests
-        </button>
-      </div>
-    </>
+    <Container className="mt-5" fluid>
+      <Row className="justify-content-center">
+        <Col xs={12} sm={10} md={8} lg={6}>
+          <Card>
+            <Card.Body>
+              <Card.Title className="mb-4 text-center">Your friends</Card.Title>
+              <ListGroup variant="flush">
+                {friends.map((friend) => (
+                  <ListGroup.Item key={friend._id}>
+                    {friend.username}
+                  </ListGroup.Item>
+                ))}
+              </ListGroup>
+              <div className="d-flex justify-content-around mt-3">
+                <Button variant="primary" onClick={handleAddNewFriend}>
+                  Add new friend
+                </Button>
+                <Button variant="secondary" onClick={handleFriendRequests}>
+                  Friend requests
+                </Button>
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
   );
 }

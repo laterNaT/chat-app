@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Button, Col, Container, Form, InputGroup, Row } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
 import { Socket } from "socket.io-client";
 import {
@@ -54,50 +55,45 @@ export default function ConversationPage({
   };
 
   return (
-    <div
+    <Container
+      fluid
       style={{
-        width: "100%",
-        position: "relative",
+        height: "calc(100vh - 80px)",
         display: "flex",
         flexDirection: "column",
       }}
     >
-      <div style={{ overflowY: "scroll", height: "80vh" }}>
-        {messages.map((message, index) => (
-          <div key={index}>
-            <p>
-              {message.username === username ? "You" : message.username}:{" "}
-              <span style={{ fontSize: "10px" }}>
-                {formatDate(message.date)}
-              </span>
-            </p>
-            <p>{message.message}</p>
-          </div>
-        ))}
-      </div>
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          display: "flex",
-          gap: "10px",
-          marginTop: "16px",
-          justifySelf: "flex-end",
-        }}
-      >
-        <textarea
-          style={{
-            padding: "10px",
-            fontSize: "16px",
-            flexGrow: 1,
-            borderRadius: "5px",
-          }}
-          onChange={(e) => setText(e.target.value)}
-          value={text}
-        />
-        <button className="button" type="submit">
-          Send
-        </button>
-      </form>
-    </div>
+      <Row className="mb-3" style={{ overflowY: "scroll" }}>
+        <Col>
+          {messages.map((message, index) => (
+            <div key={index}>
+              <p>
+                {message.username === username ? "You" : message.username}:{" "}
+                <span style={{ fontSize: "10px" }}>
+                  {formatDate(message.date)}
+                </span>
+              </p>
+              <p>{message.message}</p>
+            </div>
+          ))}
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <Form onSubmit={handleSubmit}>
+            <InputGroup>
+              <Form.Control
+                as="input"
+                onChange={(e) => setText(e.target.value)}
+                value={text}
+              />
+              <Button variant="primary" type="submit">
+                Send
+              </Button>
+            </InputGroup>
+          </Form>
+        </Col>
+      </Row>
+    </Container>
   );
 }

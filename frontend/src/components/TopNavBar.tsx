@@ -1,3 +1,4 @@
+import { Nav, Navbar } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { Socket } from "socket.io-client";
 import {
@@ -5,7 +6,6 @@ import {
   ServerToClientEvents,
 } from "../../../backend/src/types/my_types/sockets";
 import { useAuthentication } from "../context/AuthenticationContext";
-import "../styles/TopNavBar.scss";
 
 export default function TopNavBar({
   socket,
@@ -24,27 +24,29 @@ export default function TopNavBar({
   };
 
   return (
-    <nav className="navbar">
-      <ul className="navbar-nav">
-        <li className="nav-item">
-          <Link to="/home" className="nav-link">
+    <Navbar className="bg-body-tertiary" expand="lg">
+      <Nav className="mx-auto">
+        <Nav.Item>
+          <Nav.Link as={Link} to="/home">
             Home
-          </Link>
-        </li>
-        <li className="nav-item">
-          <Link to="/home/profile" className="nav-link">
+          </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link as={Link} to="/home/profile">
             Profile
-          </Link>
-        </li>
-        <li className="nav-item">
+          </Nav.Link>
+        </Nav.Item>
+      </Nav>
+      <Nav className="ml-auto ">
+        <Nav.Item>
           <button
             className="nav-link logout-button"
             onClick={() => void logout()}
           >
             Logout
           </button>
-        </li>
-      </ul>
-    </nav>
+        </Nav.Item>
+      </Nav>
+    </Navbar>
   );
 }

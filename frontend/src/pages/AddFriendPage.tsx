@@ -1,9 +1,18 @@
+import {
+  Form as BootstrapForm,
+  Button,
+  Card,
+  Col,
+  Container,
+  ListGroup,
+  Row,
+} from "react-bootstrap";
 import { Form, useFetcher, useLoaderData, useLocation } from "react-router-dom";
+
 import {
   getUsersNotFriended,
   sendFriendRequest,
 } from "../services/friendService";
-import "../styles/AddFriend.scss";
 
 export async function loader({ request }: { request: Request }) {
   const url = new URL(request.url);
@@ -66,39 +75,67 @@ export default function AddFriendPage() {
   };
 
   return (
-    <>
-      <Form
-        className="search-form"
-        method="get"
-        action="/home/manage-friends/add"
-      >
-        <label className="form-label">
-          <input className="form-input" type="text" name="username" />
-        </label>
-        <button className="button" type="submit">
-          Search
-        </button>
-      </Form>
-      {users.length > 0 ? (
-        <>
-          <h1 className="results-header">Search results</h1>
-          <ul className="results-list">
-            {users.map((user) => (
-              <li className="results-item" key={user._id}>
-                <p className="user-name">{user.username}</p>
-                <fetcher.Form method="post" action={pathname}>
-                  <button className="button" style={styleBtn(user.status)}>
-                    {user.status === "none" ? "add" : user.status}
-                  </button>
-                  <input type="hidden" name="username2" value={user.username} />
-                </fetcher.Form>
-              </li>
-            ))}
-          </ul>
-        </>
-      ) : (
-        <div className="search-prompt">Enter a username to start searching</div>
-      )}
-    </>
+    <Container className="mt-5" fluid>
+      <Row className="justify-content-center">
+        <Col xs={12} sm={10} md={8} lg={6}>
+          <Card>
+            <Card.Body>
+              <Card.Title className="mb-4 text-center">Add a Friend</Card.Title>
+              <Form method="get" action="/home/manage-friends/add">
+                <BootstrapForm.Group className="mb-3">
+                  <BootstrapForm.Control
+                    type="text"
+                    name="username"
+                    placeholder="Enter username to search"
+                  />
+                </BootstrapForm.Group>
+                <Button variant="primary" type="submit" className="mb-3 w-100">
+                  Search
+                </Button>
+              </Form>
+              {users.length > 0 && (
+                <>
+                  <Card.Title>Search results</Card.Title>
+                  <ListGroup variant="flush">
+                    {users.map((user) => (
+                      <ListGroup.Item key={user._id}>
+                        <Row>
+                          <Col>{user.username}</Col>
+                          <Col>
+                            <fetcher.Form method="post" action={pathname}>
+                              <Button
+                                variant={
+                                  user.status === "none"
+                                    ? "primary"
+                                    : "secondary"
+                                }
+                                className="float-end"
+                                type="submit"
+                              >
+                                {user.status === "none" ? "Add" : user.status}
+                              </Button>
+                              <input
+                                type="hidden"
+                                name="username2"
+                                value={user.username}
+                              />
+                            </fetcher.Form>
+                          </Col>
+                        </Row>
+                      </ListGroup.Item>
+                    ))}
+                  </ListGroup>
+                </>
+              )}
+              {users.length === 0 && (
+                <p className="text-center">
+                  Enter a username to start searching
+                </p>
+              )}
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
   );
 }

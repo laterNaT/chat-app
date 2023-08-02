@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { Col, Container, Row } from "react-bootstrap";
 import { Outlet, useLoaderData } from "react-router-dom";
 import { Socket } from "socket.io-client";
 import Sidebar, { TConversations } from "../components/Sidebar";
@@ -26,22 +27,20 @@ export default function HomePage({ socket }: { socket: Socket }) {
   }, [socket]);
 
   return (
-    <>
+    <Container fluid>
       <TopNavBar socket={socket} />
-      <div style={{ display: "flex" }}>
-        <Sidebar conversations={conversations} />
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            width: "100%",
-            height: "100vh",
-            margin: "16px",
-          }}
+      <Row>
+        <Col
+          xs={3}
+          md={2}
+          style={{ height: "calc(100vh - 56px)", overflowY: "scroll" }}
         >
+          <Sidebar conversations={conversations} />
+        </Col>
+        <Col xs={9} md={10} style={{ height: "100vh" }}>
           <Outlet />
-        </div>
-      </div>
-    </>
+        </Col>
+      </Row>
+    </Container>
   );
 }

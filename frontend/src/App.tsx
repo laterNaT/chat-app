@@ -5,6 +5,7 @@ import {
 } from "react-router-dom";
 import { Socket, io } from "socket.io-client";
 // import "../../backend/src/types/my_types/sockets";
+import "bootstrap/dist/css/bootstrap.min.css";
 import {
   ClientToServerEvents,
   ServerToClientEvents,
