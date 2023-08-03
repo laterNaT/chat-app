@@ -19,6 +19,7 @@ import AddFriendPage, {
   loader as addFriendLoader,
 } from "./pages/AddFriendPage";
 import ConversationPage from "./pages/ConversationPage";
+import ErrorPage from "./pages/ErrorPage";
 import FriendRequestsPage, {
   action as friendRequestsAction,
   loader as friendRequestsLoader,
@@ -59,6 +60,11 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <RootPage />,
+    errorElement: (
+      <ProtectedRoute>
+        <ErrorPage />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/login",
