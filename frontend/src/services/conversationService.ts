@@ -33,6 +33,7 @@ const createConversation = async ({
     return data;
   } catch (err) {
     console.log(err);
+    throw new Error("Could not create conversation");
   }
 };
 

@@ -30,7 +30,7 @@ export async function action({ request }: { request: Request }) {
     return await createConversation({ conversationName, participants });
   } catch (err) {
     console.log(err);
-    return "";
+    return null;
   }
 }
 
