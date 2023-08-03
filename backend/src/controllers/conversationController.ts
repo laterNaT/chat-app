@@ -12,6 +12,13 @@ const createConversation = asyncHandler(async (req: Request, res: Response) => {
     participants: mongoose.Types.ObjectId[];
   };
 
+  if (participants.length === 0) {
+    res.status(400);
+    throw new Error(
+      "There must be at least one participant in the conversation",
+    );
+  }
+
   if (!conversationName || !participants) {
     res.status(400);
     throw new Error("No name or members");
