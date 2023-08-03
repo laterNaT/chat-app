@@ -63,7 +63,7 @@ export default function ConversationPage({
         flexDirection: "column",
       }}
     >
-      <Row className="mb-3" style={{ overflowY: "scroll" }}>
+      <Row className="mb-3 mt-3" style={{ overflowY: "scroll", flexGrow: 1 }}>
         <Col>
           {messages.map((message, index) => (
             <div key={index}>
@@ -76,6 +76,11 @@ export default function ConversationPage({
               <p>{message.message}</p>
             </div>
           ))}
+          {messages.length === 0 && (
+            <div className="d-flex justify-content-center align-items-center h-100">
+              <p>No messages in this conversation</p>
+            </div>
+          )}
         </Col>
       </Row>
       <Row>
