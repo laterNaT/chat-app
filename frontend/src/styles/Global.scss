@@ -1,6 +1,7 @@
-// create variable for color light
-$color-light: red;
-
 .conversation-sidebar:hover {
   cursor: pointer;
+}
+
+.card-body a {
+  text-decoration: none;
 }
