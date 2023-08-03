@@ -22,10 +22,13 @@ export async function loader({ request }: { request: Request }) {
   }
   const { data, error } = await getUsersNotFriended({ username: searchTerm });
   if (error) {
-    console.log(error);
     return { users: [] };
   }
-  return { users: data.users };
+
+  if (data.users.length === 0) {
+    return { users: [], usersFound: false };
+  }
+  return { users: data.users, usersFound: true };
 }
 
 export async function action({ request }: { request: Request }) {
@@ -55,7 +58,9 @@ export async function action({ request }: { request: Request }) {
 }
 
 export default function AddFriendPage() {
-  const { users } = useLoaderData() as Awaited<ReturnType<typeof loader>>;
+  const { users, usersFound } = useLoaderData() as Awaited<
+    ReturnType<typeof loader>
+  >;
   const fetcher = useFetcher();
   const { pathname } = useLocation();
 
@@ -87,6 +92,7 @@ export default function AddFriendPage() {
                     type="text"
                     name="username"
                     placeholder="Enter username to search"
+                    required
                   />
                 </BootstrapForm.Group>
                 <Button variant="primary" type="submit" className="mb-3 w-100">
@@ -127,9 +133,9 @@ export default function AddFriendPage() {
                   </ListGroup>
                 </>
               )}
-              {users.length === 0 && (
-                <p className="text-center">
-                  Enter a username to start searching
+              {usersFound === false && (
+                <p className="text-center text-danger">
+                  No users found matching your search term.
                 </p>
               )}
             </Card.Body>
