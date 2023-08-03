@@ -23,14 +23,20 @@ export default function Sidebar({
   };
 
   return (
-    <div className="px-2 d-flex flex-column justify-content-between pb-4">
-      <h2>Conversations</h2>
-      <div className="d-flex flex-column gap-2">
-        {conversations.map((conversation, index) => (
-          <ConversationSidebar key={index} {...conversation} />
-        ))}
-      </div>
-      <div className="d-flex flex-column gap-2 mt-4">
+    <div className="px-2 d-flex flex-column justify-content-between pb-4 h-100">
+      <h2 className="text-center">Conversations</h2>
+      {conversations.length > 0 ? (
+        <div className="d-flex flex-column gap-2" style={{ flexGrow: 1 }}>
+          {conversations.map((conversation, index) => (
+            <ConversationSidebar key={index} {...conversation} />
+          ))}
+        </div>
+      ) : (
+        <div className="d-flex flex-column justify-content-center align-items-center h-100">
+          <p className="text-center ">No conversations</p>
+        </div>
+      )}
+      <div className="d-flex flex-column gap-2 mt-4 mb-2">
         <Button variant="primary" onClick={manageFriends}>
           Manage friends
         </Button>
