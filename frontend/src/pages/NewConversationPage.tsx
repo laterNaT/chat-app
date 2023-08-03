@@ -7,7 +7,7 @@ import {
   ListGroup,
   Row,
 } from "react-bootstrap";
-import { useActionData, useFetcher, useLoaderData } from "react-router-dom";
+import { redirect, useFetcher, useLoaderData } from "react-router-dom";
 import { createConversation } from "../services/conversationService";
 import { getFriends } from "../services/friendService";
 
@@ -20,25 +20,23 @@ export async function loader() {
   return { friends: data.friends };
 }
 
-//todo: this should redirect to the new conversation
 export async function action({ request }: { request: Request }) {
   try {
     const formdata = await request.formData();
     const data = Object.fromEntries(formdata.entries());
     const participants = Object.keys(data).filter((key) => data[key] === "on");
     const conversationName = data.conversationName as string;
-    return await createConversation({ conversationName, participants });
+    const res = await createConversation({ conversationName, participants });
+    const id = res.conversationId;
+    return redirect(`/home/conversations/${id}`);
   } catch (err) {
-    console.log(err);
     return null;
   }
 }
 
 export default function NewConversationPage() {
   const { friends } = useLoaderData() as Awaited<ReturnType<typeof loader>>;
-  const data = useActionData();
   const fetcher = useFetcher();
-  console.log(data);
 
   return (
     <Container className="mt-5" fluid>
@@ -56,6 +54,7 @@ export default function NewConversationPage() {
                     type="text"
                     name="conversationName"
                     placeholder="Enter conversation name"
+                    required
                   />
                 </Form.Group>
                 <Form.Label>
