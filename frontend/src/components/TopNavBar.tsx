@@ -40,7 +40,7 @@ export default function TopNavBar({
       <Nav className="ml-auto ">
         <Nav.Item>
           <button
-            className="nav-link logout-button"
+            className="nav-link text-danger"
             onClick={() => void logout()}
           >
             Logout
