@@ -1,3 +1,4 @@
+import { Button, Col, Container, InputGroup, Row } from "react-bootstrap";
 import { useFetcher, useLoaderData } from "react-router-dom";
 import {
   acceptFriendRequest,
@@ -34,27 +35,41 @@ export default function FriendRequestsPage() {
   const fetcher = useFetcher();
 
   return (
-    <>
-      <h1>Friend requests</h1>
-      <div>
-        {friendRequests.map((friendRequest) => (
-          <div key={friendRequest._id}>
-            <div style={{ display: "flex", gap: "20px" }}>
-              <p>{friendRequest.sender.username}</p>
-              <fetcher.Form method="post">
-                <input
-                  type="hidden"
-                  name="username"
-                  value={friendRequest.sender.username}
-                />
-                <button className="button" type="submit">
-                  Accept friend request
-                </button>
-              </fetcher.Form>
-            </div>
-          </div>
-        ))}
-      </div>
-    </>
+    <Container>
+      <Row className="justify-content-center">
+        <h1 className="text-center mb-4 mt-3">Friend Requests</h1>
+
+        <Row>
+          {friendRequests.map((friendRequest) => (
+            <Col
+              md={{ span: 6, offset: 3 }}
+              key={friendRequest._id}
+              className="mb-3"
+            >
+              <InputGroup className="justify-content-center">
+                <Col xs={4}>
+                  <InputGroup.Text>
+                    {friendRequest.sender.username}
+                  </InputGroup.Text>
+                </Col>
+                <fetcher.Form method="post">
+                  <input
+                    type="hidden"
+                    name="username"
+                    value={friendRequest.sender.username}
+                  />
+                  <Button variant="primary" type="submit" className="ms-1 me-1">
+                    Accept
+                  </Button>
+                  <Button variant="danger" type="submit">
+                    Decline
+                  </Button>
+                </fetcher.Form>
+              </InputGroup>
+            </Col>
+          ))}
+        </Row>
+      </Row>
+    </Container>
   );
 }
