@@ -10,7 +10,6 @@ export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [showError, setShowError] = useState(false);
 
   const login = async () => {
     await handleLogin(username, password);
