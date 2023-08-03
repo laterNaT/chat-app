@@ -84,7 +84,6 @@ export function AuthenticationContextProvider({
       }
     } catch (err) {
       console.log("Error occured in register");
-      console.log(err);
       throw err;
     }
   };

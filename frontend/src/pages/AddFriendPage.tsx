@@ -35,25 +35,9 @@ export async function action({ request }: { request: Request }) {
   const data = await request.formData();
   const username = data.get("username2") as string;
   try {
-    if (!username) {
-      return {
-        success: false,
-      };
-    }
-    const res = await sendFriendRequest({ username });
-    if (!res.data) {
-      return {
-        success: false,
-      };
-    }
-    return {
-      success: true,
-    };
+    return await sendFriendRequest({ username });
   } catch (err) {
-    console.log(err);
-    return {
-      success: false,
-    };
+    return null;
   }
 }
 
@@ -63,21 +47,6 @@ export default function AddFriendPage() {
   >;
   const fetcher = useFetcher();
   const { pathname } = useLocation();
-
-  const styleBtn = (status: string) => {
-    switch (status) {
-      case "pending":
-        return {
-          backgroundColor: "lightblue",
-        };
-      case "accepted":
-        return {
-          backgroundColor: "green",
-        };
-      default:
-        return {};
-    }
-  };
 
   return (
     <Container className="mt-5" fluid>

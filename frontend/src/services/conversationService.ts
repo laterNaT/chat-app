@@ -32,7 +32,6 @@ const createConversation = async ({
     }
     return data;
   } catch (err) {
-    console.log(err);
     throw new Error("Could not create conversation");
   }
 };
@@ -52,7 +51,6 @@ const getConversations = async () => {
 
     return data;
   } catch (err) {
-    console.log(err);
     throw new Error("Could not get conversations");
   }
 };

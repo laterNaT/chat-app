@@ -8,7 +8,6 @@ import {
 export async function loader() {
   const { error, data } = await getFriendRequests();
   if (error) {
-    console.log(error);
     return { friendRequests: [] };
   }
   return { friendRequests: data.friendRequests };

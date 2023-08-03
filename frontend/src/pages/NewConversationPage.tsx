@@ -14,7 +14,6 @@ import { getFriends } from "../services/friendService";
 export async function loader() {
   const { data, error } = await getFriends();
   if (error) {
-    console.log(error);
     return { friends: [] };
   }
   return { friends: data.friends };
