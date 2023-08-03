@@ -27,13 +27,14 @@ export default function HomePage({ socket }: { socket: Socket }) {
   }, [socket]);
 
   return (
-    <Container fluid>
+    <Container fluid style={{ padding: "0px" }}>
       <TopNavBar socket={socket} />
       <Row>
         <Col
           xs={3}
           md={2}
           style={{ height: "calc(100vh - 56px)", overflowY: "scroll" }}
+          className="bg-light"
         >
           <Sidebar conversations={conversations} />
         </Col>

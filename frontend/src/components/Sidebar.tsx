@@ -23,7 +23,7 @@ export default function Sidebar({
   };
 
   return (
-    <div className="px-2 d-flex flex-column justify-content-between pb-4 bg-light ">
+    <div className="px-2 d-flex flex-column justify-content-between pb-4">
       <h2>Conversations</h2>
       <div className="d-flex flex-column gap-2">
         {conversations.map((conversation, index) => (
