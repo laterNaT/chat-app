@@ -68,6 +68,11 @@ export default function FriendRequestsPage() {
               </InputGroup>
             </Col>
           ))}
+          {friendRequests.length === 0 && (
+            <Col>
+              <p className="text-center">No friend requests</p>
+            </Col>
+          )}
         </Row>
       </Row>
     </Container>
