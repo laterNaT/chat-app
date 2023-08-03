@@ -39,7 +39,7 @@ export default function ManageFriendsPage() {
                   </ListGroup.Item>
                 ))}
               </ListGroup>
-              <div className="d-flex justify-content-around mt-3">
+              <div className="d-flex justify-content-center gap-2 mt-3">
                 <Button variant="primary" onClick={handleAddNewFriend}>
                   Add new friend
                 </Button>
