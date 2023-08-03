@@ -24,6 +24,7 @@ import FriendRequestsPage, {
   loader as friendRequestsLoader,
 } from "./pages/FriendRequestsPage";
 import HomePage, { loader as homePageLoader } from "./pages/HomePage";
+import IndexPage from "./pages/IndexPage";
 import LoginPage from "./pages/LoginPage";
 import ManageFriendsPage, {
   loader as manageFriendsLoader,
@@ -76,6 +77,14 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
+      {
+        index: true,
+        element: (
+          <ProtectedRoute>
+            <IndexPage />
+          </ProtectedRoute>
+        ),
+      },
       {
         path: "manage-friends",
         loader: manageFriendsLoader,
