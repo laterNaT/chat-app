@@ -19,6 +19,16 @@ const registerUser = asyncHandler(async (req: Request, res: Response) => {
     throw new Error("Password must be at least 6 characters long");
   }
 
+  if (req.body.username.length < 3) {
+    res.status(400);
+    throw new Error("Username must be at least 3 characters long");
+  }
+
+  if (req.body.username.length > 12) {
+    res.status(400);
+    throw new Error("Username must be at most 12 characters long");
+  }
+
   // check if the username is already taken
   const user = await User.findOne({ username: req.body.username });
   if (user) {
@@ -54,6 +64,12 @@ const loginUser = asyncHandler(async (req: Request, res: Response) => {
     throw new Error("Username does not exist");
   }
 
+  if (!req.body.password) {
+    // otherwise bcrypt will throw an error status 200
+    res.status(400);
+    throw new Error("Password is required");
+  }
+
   // check if the password is correct
   const match = await bcrypt.compare(req.body.password, user.password);
   if (!match) {
@@ -68,6 +84,7 @@ const loginUser = asyncHandler(async (req: Request, res: Response) => {
 
   req.session.save((err) => {
     if (err) {
+      console.log(err);
       res.status(400);
       throw new Error("Error saving session");
     }
