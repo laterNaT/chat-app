@@ -65,6 +65,16 @@ const registerConversationHandler = (
     console.log("user disconnected", socket.id);
   };
 
+  io.use((socket, next) => {
+    const session = socket.request.session;
+    if (session && session.isAuthorized) {
+      next();
+    } else {
+      console.log("unauthorized socket request denied");
+      next(new Error("unauthorized"));
+    }
+  });
+
   socket.on("joinConversation", joinConversation);
   socket.on("leaveConversation", leaveConversation);
   socket.on("sendMessage", sendMessage);
