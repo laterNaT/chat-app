@@ -5,13 +5,13 @@ import {
   registerUser,
   searchUsers,
 } from "../controllers/userController";
-import checkLoggedIn from "../middleware/checkLoggedIn";
+import { ensureLoggedIn } from "../middleware/ensureLoggedIn";
+import { ensureNotLoggedIn } from "../middleware/ensureNotLoggedIn";
 const router = express.Router();
 
-router.use(checkLoggedIn);
-router.post("/register", registerUser);
-router.post("/login", loginUser);
-router.delete("/logout", logoutUser);
-router.get("/search/:username", searchUsers);
+router.post("/register", ensureNotLoggedIn, registerUser);
+router.post("/login", ensureNotLoggedIn, loginUser);
+router.delete("/logout", ensureLoggedIn, logoutUser);
+router.get("/search/:username", ensureLoggedIn, searchUsers);
 
 export default router;
