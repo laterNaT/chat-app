@@ -87,6 +87,7 @@ const acceptFriendRequest = asyncHandler(
         })
         .session(session);
       if (!friendRequest) {
+        res.status(400);
         throw new Error("Friend request not found");
       }
 
