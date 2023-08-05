@@ -147,4 +147,62 @@ describe("friend", () => {
       });
     });
   });
+  describe("accept friend request", () => {
+    beforeEach(async () => {
+      await user1.agent.post("/api/users/register").send(user1.user);
+      await user2.agent.post("/api/users/register").send(user2.user);
+      await user1.agent.post("/api/users/login").send(user1.user);
+      await user2.agent.post("/api/users/login").send(user2.user);
+    });
+
+    afterEach(async () => {
+      await user1.agent.post("/api/users/logout");
+    });
+
+    describe("from a user that exists and has sent us a friend request", () => {
+      beforeEach(async () => {
+        await user1.agent.post("/api/friends/requests/send").send({
+          username: user2.user.username,
+        });
+      });
+      it("should return status 200", async () => {
+        const { statusCode } = await user2.agent
+          .post("/api/friends/requests/accept")
+          .send({
+            username: user1.user.username,
+          });
+        expect(statusCode).toBe(200);
+      });
+    });
+
+    describe("from a user that does not exist", () => {
+      it("should return status 400", async () => {
+        const { statusCode } = await user1.agent
+          .post("/api/friends/requests/accept")
+          .send({
+            username: "doesnotexist",
+          });
+        expect(statusCode).toBe(400);
+      });
+    });
+
+    describe("from a user that is already friends", () => {
+      beforeEach(async () => {
+        await user1.agent.post("/api/friends/requests/send").send({
+          username: user2.user.username,
+        });
+        await user2.agent.post("/api/friends/requests/accept").send({
+          username: user1.user.username,
+        });
+      });
+      it("should return status 400", async () => {
+        const { statusCode } = await user2.agent
+          .post("/api/friends/requests/accept")
+          .send({
+            username: user1.user.username,
+          });
+        expect(statusCode).toBe(400);
+      });
+    });
+  });
 });
