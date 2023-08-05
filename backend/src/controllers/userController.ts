@@ -119,7 +119,7 @@ const searchUsers = asyncHandler(async (req: Request, res: Response) => {
   const myUser = await User.findById(req.session.userId);
   if (!myUser) {
     res.status(400);
-    throw new Error("User does not exist");
+    throw new Error("User is not logged in ");
   }
   const myUsername = myUser.username;
 
