@@ -6,6 +6,7 @@ declare module "express-session" {
   export interface SessionData {
     isAuthorized: boolean;
     userId: mongoose.Types.ObjectId;
+    username: string;
   }
 }
 

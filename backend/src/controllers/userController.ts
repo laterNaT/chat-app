@@ -81,6 +81,8 @@ const loginUser = asyncHandler(async (req: Request, res: Response) => {
   req.session.isAuthorized = true;
   // save the user id
   req.session.userId = user._id;
+  //save the username so we dont have to query the database for it
+  req.session.username = user.username;
 
   req.session.save((err) => {
     if (err) {
@@ -116,12 +118,7 @@ const logoutUser = asyncHandler(async (req: Request, res: Response) => {
 });
 
 const searchUsers = asyncHandler(async (req: Request, res: Response) => {
-  const myUser = await User.findById(req.session.userId);
-  if (!myUser) {
-    res.status(400);
-    throw new Error("User is not logged in ");
-  }
-  const myUsername = myUser.username;
+  const myUsername = req.session.username;
 
   // find users that match the username and is not the current user
   const users = await User.find({
