@@ -204,5 +204,153 @@ describe("friend", () => {
         expect(statusCode).toBe(400);
       });
     });
+
+    describe("from a user that has not sent us a friend request", () => {
+      it("should return status 400", async () => {
+        const { statusCode, body } = await user2.agent
+          .post("/api/friends/requests/accept")
+          .send({
+            username: user1.user.username,
+          });
+        expect(statusCode).toBe(400);
+      });
+    });
+  });
+  describe("fetch pending friend requests", () => {
+    beforeEach(async () => {
+      await user1.agent.post("/api/users/register").send(user1.user);
+      await user2.agent.post("/api/users/register").send(user2.user);
+      await user1.agent.post("/api/users/login").send(user1.user);
+      await user2.agent.post("/api/users/login").send(user2.user);
+    });
+
+    afterEach(async () => {
+      await user1.agent.post("/api/users/logout");
+    });
+
+    describe("when we have pending friend requests", () => {
+      beforeEach(async () => {
+        await user1.agent.post("/api/friends/requests/send").send({
+          username: user2.user.username,
+        });
+      });
+      it("should return status 200", async () => {
+        const { statusCode } = await user2.agent.get(
+          "/api/friends/requests/pending",
+        );
+        expect(statusCode).toBe(200);
+      });
+      it("should return the correct number of pending friend requests", async () => {
+        const { body } = await user2.agent.get("/api/friends/requests/pending");
+        expect(body.friendRequests.length).toBe(1);
+      });
+    });
+
+    describe("when we have no pending friend requests", () => {
+      it("should return status 200", async () => {
+        const { statusCode } = await user2.agent.get(
+          "/api/friends/requests/pending",
+        );
+        expect(statusCode).toBe(200);
+      });
+      it("should return an empty array", async () => {
+        const { body } = await user2.agent.get("/api/friends/requests/pending");
+        expect(body.friendRequests.length).toBe(0);
+      });
+    });
+  });
+
+  describe("get users not friended", () => {
+    beforeEach(async () => {
+      await user1.agent.post("/api/users/register").send(user1.user);
+      await user2.agent.post("/api/users/register").send(user2.user);
+      await user1.agent.post("/api/users/login").send(user1.user);
+      await user2.agent.post("/api/users/login").send(user2.user);
+    });
+
+    afterEach(async () => {
+      await user1.agent.post("/api/users/logout");
+    });
+
+    describe("when we search for a user we are not friends with", () => {
+      it("should return status 200", async () => {
+        const { statusCode } = await user2.agent.get(
+          "/api/friends/not-friended/" + user1.user.username,
+        );
+        expect(statusCode).toBe(200);
+      });
+      it("should return the correct number of users not friended", async () => {
+        const { body } = await user2.agent.get(
+          "/api/friends/not-friended/" + user1.user.username,
+        );
+        expect(body.users.length).toBe(1);
+      });
+    });
+
+    describe("when we search for a user we are already friends with", () => {
+      beforeEach(async () => {
+        await user1.agent.post("/api/friends/requests/send").send({
+          username: user2.user.username,
+        });
+        await user2.agent.post("/api/friends/requests/accept").send({
+          username: user1.user.username,
+        });
+      });
+      it("should return status 200", async () => {
+        const { statusCode } = await user2.agent.get(
+          "/api/friends/not-friended/" + user1.user.username,
+        );
+        expect(statusCode).toBe(200);
+      });
+      it("should return an empty array", async () => {
+        const { body } = await user2.agent.get(
+          "/api/friends/not-friended/" + user1.user.username,
+        );
+        expect(body.users.length).toBe(0);
+      });
+    });
+  });
+
+  describe("get friends", () => {
+    beforeEach(async () => {
+      await user1.agent.post("/api/users/register").send(user1.user);
+      await user2.agent.post("/api/users/register").send(user2.user);
+      await user1.agent.post("/api/users/login").send(user1.user);
+      await user2.agent.post("/api/users/login").send(user2.user);
+    });
+
+    afterEach(async () => {
+      await user1.agent.post("/api/users/logout");
+    });
+
+    describe("when we have friends", () => {
+      beforeEach(async () => {
+        await user1.agent.post("/api/friends/requests/send").send({
+          username: user2.user.username,
+        });
+        await user2.agent.post("/api/friends/requests/accept").send({
+          username: user1.user.username,
+        });
+      });
+      it("should return status 200", async () => {
+        const { statusCode } = await user2.agent.get("/api/friends/user");
+        expect(statusCode).toBe(200);
+      });
+      it("should return the correct number of friends", async () => {
+        const { body } = await user2.agent.get("/api/friends/user");
+        expect(body.friends.length).toBe(1);
+      });
+    });
+
+    describe("when we have no friends", () => {
+      it("should return status 200", async () => {
+        const { statusCode } = await user2.agent.get("/api/friends/user");
+        expect(statusCode).toBe(200);
+      });
+      it("should return an empty array", async () => {
+        const { body } = await user2.agent.get("/api/friends/user");
+        expect(body.friends.length).toBe(0);
+      });
+    });
   });
 });
