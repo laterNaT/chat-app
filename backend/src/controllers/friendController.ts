@@ -5,36 +5,48 @@ import friendModel from "../models/friendRequestModel";
 import userModel from "../models/userModel";
 
 const sendFriendRequest = asyncHandler(async (req: Request, res: Response) => {
-  // check if req.body.id is a valid user so
-  // we don't create a friend request for a non-existent user
-  const exists = await userModel.exists({ username: req.body.username });
-  if (!exists) {
+  const senderUser = await userModel.findById(req.session.userId);
+  const receiverUser = await userModel.findOne({ username: req.body.username });
+
+  if (!senderUser || !receiverUser) {
     res.status(400);
-    throw new Error(
-      "The user you are trying to send a friend request to does not exist",
-    );
+    throw new Error("User does not exist");
   }
 
-  // take in username instead of id (since username is unique)
-  // eeehh maybe I should just have used id instead, oh well  ¯\_(ツ)_/¯
-  const sender = req.session.userId;
-  const receiver = exists._id;
+  const sender = senderUser._id;
+  const receiver = receiverUser._id;
 
-  // check if already friends
-  const alreadyFriends = await friendModel.findOne({
-    $or: [
-      { sender, receiver },
-      { sender: receiver, receiver: sender },
-    ],
-  });
+  const alreadyFriends =
+    senderUser.friends.includes(receiver) ||
+    receiverUser.friends.includes(sender);
 
   if (alreadyFriends) {
     res.status(400);
     throw new Error("You are already friends");
   }
 
+  const weAlreadySentRequest = await friendModel.findOne({
+    sender,
+    receiver,
+  });
+
+  if (weAlreadySentRequest) {
+    res.status(400);
+    throw new Error("You have already sent a friend request to this user");
+  }
+
+  const theyAlreadySentRequest = await friendModel.findOne({
+    sender: receiver,
+    receiver: sender,
+  });
+
+  if (theyAlreadySentRequest) {
+    res.status(400);
+    throw new Error("This user has already sent you a friend request");
+  }
+
   // create the friend request
-  const result = await friendModel.create({
+  await friendModel.create({
     receiver,
     sender,
   });
@@ -50,20 +62,21 @@ const acceptFriendRequest = asyncHandler(
 
     const session = await mongoose.startSession();
     session.startTransaction();
-
     try {
-      const sender = await userModel.findOne({ username });
+      const sender = await userModel.findOne({ username }).session(session);
       if (!sender) {
         res.status(400);
         throw new Error("User does not exist");
       }
       const from = sender._id;
       const to = req.session.userId;
-      const friendRequest = await friendModel.findOne({
-        sender: from,
-        receiver: to,
-        status: "pending",
-      });
+      const friendRequest = await friendModel
+        .findOne({
+          sender: from,
+          receiver: to,
+          status: "pending",
+        })
+        .session(session);
       if (!friendRequest) {
         throw new Error("Friend request not found");
       }
