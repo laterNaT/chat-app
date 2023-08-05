@@ -23,27 +23,46 @@ let user2 = {
   password: "password",
 };
 
+let agent = supertest.agent(httpServer);
+
+async function clearDatabase() {
+  const collections = Object.keys(mongoose.connection.collections);
+
+  for (const collectionName of collections) {
+    const collection = mongoose.connection.collections[collectionName];
+    if (collectionName !== "sessions") {
+      await collection.deleteMany();
+    }
+  }
+}
+
 beforeAll(async () => {
+  httpServer.listen(5000);
   io = createSockets(httpServer, sessionMiddleware);
-  httpServer.listen(5000, () => {
-    console.log("Server running on http://localhost:5000");
-  });
   await mongoose.connect(getMongoUrl()!);
 });
 
+beforeEach(async () => {
+  agent = supertest.agent(httpServer); // IMPORTANT
+});
+
 afterEach(async () => {
-  await mongoose.connection.dropCollection("users");
-  await mongoose.connection.createCollection("users");
+  await clearDatabase();
 });
 
 afterAll(async () => {
-  await mongoose.disconnect();
+  await clearDatabase();
   await mongoose.connection.close();
+  io.close();
   httpServer.close();
 });
 
 describe("user", () => {
   describe("register user", () => {
+    afterEach(async () => {
+      await agent.post("/api/users/logout");
+    });
+
     describe("given a valid username and password", () => {
       it("should return status 201", async () => {
         const { statusCode } = await supertest(httpServer)
@@ -124,32 +143,13 @@ describe("user", () => {
     });
 
     describe("given already logged in", () => {
-      let agent: supertest.SuperAgentTest;
       beforeEach(async () => {
-        agent = supertest.agent(httpServer);
         await agent.post("/api/users/register").send(user1);
         await agent.post("/api/users/login").send(user1);
       });
 
       it("should return status 400", async () => {
         await agent.post("/api/users/login").send(user1);
-        const { statusCode } = await agent
-          .post("/api/users/register")
-          .send(user1);
-        expect(statusCode).toBe(400);
-      });
-    });
-
-    describe("given already logged out", () => {
-      let agent: supertest.SuperAgentTest;
-      beforeEach(async () => {
-        agent = supertest.agent(httpServer);
-        await agent.post("/api/users/register").send(user1);
-        await agent.post("/api/users/login").send(user1);
-        await agent.delete("/api/users/logout");
-      });
-
-      it("should return status 400", async () => {
         const { statusCode } = await agent
           .post("/api/users/register")
           .send(user1);
@@ -159,19 +159,16 @@ describe("user", () => {
   });
 
   describe("login user", () => {
-    let agent: supertest.SuperAgentTest;
     beforeEach(async () => {
-      agent = supertest.agent(httpServer);
-      await agent.post("/api/users/register").send(user1);
-    });
-    afterEach(async () => {
       await agent.delete("/api/users/logout");
+      await agent.post("/api/users/register").send(user1);
     });
 
     describe("given a valid username and password", () => {
       it("should return status 200", async () => {
-        const agent = supertest.agent(httpServer);
-        const { statusCode } = await agent.post("/api/users/login").send(user1);
+        const { statusCode, body } = await agent
+          .post("/api/users/login")
+          .send(user1);
         expect(statusCode).toBe(200);
       });
     });
@@ -214,72 +211,75 @@ describe("user", () => {
   });
   describe("logout user", () => {
     describe("given logged in", () => {
-      let agent: supertest.SuperAgentTest;
       beforeEach(async () => {
-        agent = supertest.agent(httpServer);
         await agent.post("/api/users/register").send(user1);
         await agent.post("/api/users/login").send(user1);
       });
 
       it("should return status 200", async () => {
-        const { statusCode } = await agent.delete("/api/users/logout");
+        const { statusCode, body } = await agent.delete("/api/users/logout");
         expect(statusCode).toBe(200);
       });
     });
 
     describe("given logged out", () => {
       it("should return status 400", async () => {
-        const { statusCode } = await supertest(httpServer).delete(
-          "/api/users/logout",
-        );
+        const { statusCode } = await agent.delete("/api/users/logout");
         expect(statusCode).toBe(400);
       });
     });
   });
+
   describe("search users", () => {
-    let agent: supertest.SuperAgentTest;
-    beforeEach(async () => {
-      agent = supertest.agent(httpServer);
-      await agent.post("/api/users/register").send(user1);
-      await agent.post("/api/users/login").send(user1);
-    });
-
-    describe("given a valid username", () => {
+    describe("given that the user is logged in", () => {
       beforeEach(async () => {
-        const agent2 = supertest.agent(httpServer);
-        await agent2.post("/api/users/register").send(user2);
+        await agent.post("/api/users/register").send(user1);
+        await agent.post("/api/users/login").send(user1);
+      });
+      describe("given a valid username", () => {
+        beforeEach(async () => {
+          await supertest(httpServer).post("/api/users/register").send(user2);
+        });
+
+        it("should return status 200", async () => {
+          const { statusCode } = await agent.get("/api/users/search/test2");
+          expect(statusCode).toBe(200);
+        });
+
+        it("should return an array of users", async () => {
+          const { body } = await agent.get("/api/users/search/test2");
+          expect(body).toEqual(
+            expect.objectContaining({
+              users: expect.arrayContaining([
+                expect.objectContaining({
+                  username: "test2",
+                }),
+              ]),
+            }),
+          );
+        });
       });
 
-      it("should return status 200", async () => {
-        const { statusCode } = await agent.get("/api/users/search/test2");
-        expect(statusCode).toBe(200);
-      });
+      describe("given an invalid username", () => {
+        it("should return status 200", async () => {
+          const { statusCode } = await agent.get("/api/users/search/invalid");
+          expect(statusCode).toBe(200);
+        });
 
-      it("should return an array of users", async () => {
-        const { body } = await agent.get("/api/users/search/test2");
-        expect(body).toEqual(
-          expect.objectContaining({
-            users: expect.arrayContaining([
-              expect.objectContaining({
-                username: "test2",
-              }),
-            ]),
-          }),
-        );
+        it("should return an empty array", async () => {
+          const { statusCode, body } = await agent.get(
+            "/api/users/search/invalid",
+          );
+          expect(body).toEqual(expect.arrayContaining([]));
+        });
       });
     });
-
-    describe("given an invalid username", () => {
-      it("should return status 200", async () => {
-        const { statusCode } = await agent.get("/api/users/search/invalid");
-        expect(statusCode).toBe(200);
-      });
-
-      it("should return an empty array", async () => {
+    describe("given that the user is not logged in", () => {
+      it("should return status 400", async () => {
         const { statusCode, body } = await agent.get(
-          "/api/users/search/invalid",
+          "/api/users/search/someuser",
         );
-        expect(body).toEqual(expect.arrayContaining([]));
+        expect(statusCode).toBe(400);
       });
     });
   });
