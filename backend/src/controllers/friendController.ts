@@ -63,11 +63,20 @@ const acceptFriendRequest = asyncHandler(
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
+      // check if the user we are accepting the friend request from exists
       const sender = await userModel.findOne({ username }).session(session);
       if (!sender) {
         res.status(400);
         throw new Error("User does not exist");
       }
+
+      // check if already friends
+      if (sender.friends.includes(req.session.userId)) {
+        res.status(400);
+        throw new Error("You are already friends");
+      }
+
+      // check if the friend request exists
       const from = sender._id;
       const to = req.session.userId;
       const friendRequest = await friendModel
@@ -80,8 +89,12 @@ const acceptFriendRequest = asyncHandler(
       if (!friendRequest) {
         throw new Error("Friend request not found");
       }
+
+      // set the status to accepted
       friendRequest.status = "accepted";
       await friendRequest.save({ session });
+
+      // update the friends list for both users
       const update1 = await userModel.updateOne(
         { _id: from },
         { $push: { friends: to } },
@@ -92,9 +105,12 @@ const acceptFriendRequest = asyncHandler(
         { $push: { friends: from } },
         { new: true, session },
       );
+
+      // check if the updates were successful
       if (update1.modifiedCount === 0 || update2.modifiedCount === 0) {
         throw new Error("Failed to update friends");
       }
+
       await session.commitTransaction();
     } catch (error) {
       await session.abortTransaction();
