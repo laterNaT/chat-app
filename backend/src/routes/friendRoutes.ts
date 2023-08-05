@@ -7,9 +7,10 @@ import {
   getUserFriends,
   sendFriendRequest,
 } from "../controllers/friendController";
+import { ensureLoggedIn } from "../middleware/ensureLoggedIn";
 const router = express.Router();
 
-// todo: add auth middleware
+router.use(ensureLoggedIn);
 router.post("/requests/send", sendFriendRequest);
 router.post("/requests/accept", acceptFriendRequest);
 router.post("/requests/decline", declineFriendRequest);
