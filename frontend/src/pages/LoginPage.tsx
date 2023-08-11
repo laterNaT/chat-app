@@ -12,12 +12,20 @@ export default function LoginPage() {
   const [error, setError] = useState("");
 
   const login = async () => {
-    await handleLogin(username, password);
+    try {
+      await handleLogin(username, password);
+      navigate("/home");
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      }
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    login().catch((err: Error) => setError(err.message));
+    await login();
+    // login().catch((err: Error) => setError(err.message));
   };
 
   useEffect(() => {
