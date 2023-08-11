@@ -11,7 +11,6 @@ export async function loader() {
     const res = await getConversations();
     return res.conversations;
   } catch (err) {
-    console.log(err);
     return [];
   }
 }
