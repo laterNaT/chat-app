@@ -1,47 +1,28 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button, Col, Container, Form, InputGroup, Row } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
 import { Socket } from "socket.io-client";
 import {
   ClientToServerEvents,
-  Message,
   ServerToClientEvents,
 } from "../../../backend/src/types/my_types/sockets";
 import { useAuthentication } from "../context/AuthenticationContext";
+import { useSocketCommunication } from "../hooks/useSocketConversation";
 
 export default function ConversationPage({
   socket,
 }: {
   socket: Socket<ServerToClientEvents, ClientToServerEvents>;
 }) {
-  const [messages, setMessages] = useState<Message[]>([]);
   const [text, setText] = useState<string>("");
   const { username } = useAuthentication();
   const location = useLocation();
   const path = location.pathname.split("/")[3];
-
-  useEffect(() => {
-    socket.on("receiveMessage", (data: Message) => {
-      setMessages((prev) => [...prev, data]);
-    });
-
-    socket.on("conversationHistory", (data: Message[]) => {
-      setMessages([...data]);
-    });
-
-    return () => {
-      socket.off("receiveMessage");
-      socket.off("conversationHistory");
-    };
-  }, [socket]);
-
-  useEffect(() => {
-    socket.emit("joinConversation", path);
-  }, [socket, path]);
+  const { messages, sendMessage } = useSocketCommunication(socket, path);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    socket.emit("sendMessage", {
+    sendMessage({
       message: text,
       username: username!,
       room: path,
