@@ -23,7 +23,10 @@ export default function Sidebar({
   };
 
   return (
-    <div className="px-2 d-flex flex-column justify-content-between pb-4 h-100">
+    <div
+      className="px-2 d-flex flex-column justify-content-between pb-4 h-100"
+      data-testid="sidebar"
+    >
       <h2 className="text-center">Conversations</h2>
       {conversations.length > 0 ? (
         <div className="d-flex flex-column gap-2" style={{ flexGrow: 1 }}>
