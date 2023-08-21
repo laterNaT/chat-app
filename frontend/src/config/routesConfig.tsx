@@ -50,11 +50,7 @@ const routesConfig = [
   {
     path: "/",
     element: <RootPage />,
-    errorElement: (
-      <ProtectedRoute>
-        <ErrorPage />
-      </ProtectedRoute>
-    ),
+    errorElement: <ErrorPage />,
   },
   {
     path: "/login",
